@@ -3,7 +3,7 @@ import { Loader2 } from "lucide-react";
 import { EditCardsSectionUI } from "@/shared/ui/EditCardsSectionUI";
 import { GLASS_CARD_SURFACE_CLASS } from "@/app/components/ui/glass-card";
 import { PillButton } from "@/app/components/ui/pill-button";
-import { resolveDocumentEdit } from "@/app/lib/mikeApi";
+import { resolveDocumentEdit } from "@/app/lib/zaneApi";
 import type { EditAnnotation } from "../../shared/types";
 import { applyOptimisticResolution } from "../EditCard";
 

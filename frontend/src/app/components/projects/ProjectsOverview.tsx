@@ -8,7 +8,7 @@ import {
     type ProjectFilterOptions,
     updateProject,
     deleteProject,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import { deleteTabularReviewsWithConcurrency } from "@/app/lib/deleteTabularReviewsWithConcurrency";
 import { useDebouncedValue } from "@/app/hooks/useDebouncedValue";
 import { usePaginatedProjects } from "@/app/hooks/usePaginatedProjects";

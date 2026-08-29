@@ -1,16 +1,16 @@
-# Mike
+# zane
 
-![Mike](docs/assets/link-image.jpg)
+![zane](docs/assets/link-image.jpg)
 
-Mike (MikeOSS) is an open-source legal AI platform for document review,
+zane (zaneOSS) is an open-source legal AI platform for document review,
 drafting, and legal research.
 
 It combines a Next.js frontend, an Express backend, Supabase Auth/Postgres,
 and Cloudflare R2-compatible object storage.
 
-Website: [mikeoss.com](https://mikeoss.com)
+Website: [zaneoss.com](https://zaneoss.com)
 
-![Mike assistant home screen](docs/assets/mike-home.png)
+![zane assistant home screen](docs/assets/zane-home.png)
 
 ## Features
 
@@ -24,7 +24,7 @@ Website: [mikeoss.com](https://mikeoss.com)
 
 ## Quick start
 
-The included Docker Compose stack runs Mike, Supabase, RustFS object storage,
+The included Docker Compose stack runs zane, Supabase, RustFS object storage,
 and local email capture without requiring managed infrastructure.
 
 1. Copy the local environment templates:
@@ -84,11 +84,11 @@ authentication behavior, Ollama setup, and first-run guidance.
 
 ## System workflows
 
-Mike's system assistant and tabular-review workflows are maintained in the
+zane's system assistant and tabular-review workflows are maintained in the
 [`Open-Legal-Products/mike-workflows`](https://github.com/Open-Legal-Products/mike-workflows)
 repository. See [Contributing](CONTRIBUTING.md#system-workflows) for how they are
 packaged and synchronized with this application.
 
 ## License
 
-Mike is available under the [GNU Affero General Public License v3.0](LICENSE).
+zane is available under the [GNU Affero General Public License v3.0](LICENSE).

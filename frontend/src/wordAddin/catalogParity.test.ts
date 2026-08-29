@@ -30,7 +30,7 @@ import {
 import type { ApiKeyStatus } from "../../../word-addin/src/taskpane/api/client";
 import { isModelAvailable as webIsModelAvailable } from "../app/lib/modelAvailability";
 import { isAllowedModelId as webIsAllowedModelId } from "../app/hooks/useSelectedModel";
-import type { ApiKeyState } from "../app/lib/mikeApi";
+import type { ApiKeyState } from "../app/lib/zaneApi";
 
 describe("word add-in catalog parity", () => {
     it("offers exactly the web app's static models (id, label, group)", () => {

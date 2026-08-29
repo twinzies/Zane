@@ -6,7 +6,7 @@
  * rejects a response that ends without a terminal `[DONE]`. Framing rules live
  * in the local HTTP client's readSSE.
  */
-import { streamWordChat, readSSE } from "./mikeApi";
+import { streamWordChat, readSSE } from "./zaneApi";
 import type { ReasoningLevel } from "../lib/wordChatTypes";
 
 export interface WordChatDocumentReadEvent {

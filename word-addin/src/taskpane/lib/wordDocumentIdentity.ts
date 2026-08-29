@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { createSecureUuid } from "./secureUuid";
 import { clearWordEditAnchorRegistry } from "./wordEditAnchors";
 
-const WORD_DOCUMENT_ID_SETTING = "mike.word.documentId.v1";
-const WORD_DOCUMENT_URL_SETTING = "mike.word.documentUrl.v1";
+const WORD_DOCUMENT_ID_SETTING = "zane.word.documentId.v1";
+const WORD_DOCUMENT_URL_SETTING = "zane.word.documentUrl.v1";
 
 function saveSettings(settings: Office.Settings): Promise<void> {
   return new Promise((resolve, reject) => {

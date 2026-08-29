@@ -2,7 +2,7 @@ import type { PanelDocument } from "../shared/types";
 import {
     listDocumentVersions,
     type DocumentVersion,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 
 type VersionList = {
     current_version_id: string | null;

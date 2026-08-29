@@ -5,10 +5,10 @@ import {
   exportAuditHistory,
   getAuditHistory,
   type AuditEvent,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import HistoryPage from "./page";
 
-vi.mock("@/app/lib/mikeApi", () => ({
+vi.mock("@/app/lib/zaneApi", () => ({
   getAuditHistory: vi.fn(),
   exportAuditHistory: vi.fn(),
 }));

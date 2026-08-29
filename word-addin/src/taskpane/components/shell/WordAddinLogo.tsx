@@ -1,5 +1,5 @@
 import React from "react";
-import { MikeIcon } from "../../../shared/chat/mike-icon";
+import { ZaneIcon } from "../../../shared/chat/zane-icon";
 import { cn } from "../../../shared/lib/utils";
 
 interface WordAddinLogoProps {
@@ -7,7 +7,7 @@ interface WordAddinLogoProps {
   className?: string;
 }
 
-/** Mike logo lockup shared by branded Word add-in surfaces. */
+/** zane logo lockup shared by branded Word add-in surfaces. */
 export function WordAddinLogo({
   size = "md",
   className,
@@ -15,14 +15,14 @@ export function WordAddinLogo({
   const large = size === "lg";
   return (
     <div className={cn("flex items-center gap-1.5", className)}>
-      <MikeIcon size={large ? 30 : 22} />
+      <ZaneIcon size={large ? 30 : 22} />
       <span
         className={cn(
           "font-serif font-light text-foreground",
           large ? "text-4xl" : "text-2xl"
         )}
       >
-        Mike
+        zane
       </span>
     </div>
   );

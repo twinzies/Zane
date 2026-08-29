@@ -24,8 +24,8 @@ vi.mock("@/app/contexts/AuthContext", () => ({
     }),
 }));
 
-vi.mock("@/app/lib/mikeApi", async (importOriginal) => ({
-    ...(await importOriginal<typeof import("@/app/lib/mikeApi")>()),
+vi.mock("@/app/lib/zaneApi", async (importOriginal) => ({
+    ...(await importOriginal<typeof import("@/app/lib/zaneApi")>()),
     getUserProfile: (...args: unknown[]) => getUserProfile(...args),
     updateUserProfile: (...args: unknown[]) => updateUserProfile(...args),
     updateChatModel: (...args: unknown[]) => updateChatModel(...args),

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { WorkflowSlashCommandUI } from "@mike/workflow-slash-command-ui";
+import { WorkflowSlashCommandUI } from "@zane/workflow-slash-command-ui";
 import type { Workflow } from "../../types";
-import { deleteWorkflow, updateWorkflow } from "../../api/mikeApi";
+import { deleteWorkflow, updateWorkflow } from "../../api/zaneApi";
 import { Modal } from "../primitives/Modal";
 import {
   ModalFieldLabel,

@@ -26,7 +26,7 @@ import {
     isDocxFilename,
     isSpreadsheetFilename,
 } from "@/app/components/shared/types";
-import type { DocumentVersion } from "@/app/lib/mikeApi";
+import type { DocumentVersion } from "@/app/lib/zaneApi";
 import { cn } from "@/app/lib/utils";
 import {
     LIQUID_FLOAT_PANEL_SURFACE_CLASS,

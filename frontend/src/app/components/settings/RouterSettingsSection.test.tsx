@@ -15,7 +15,7 @@ const {
     openCodeGoConfigured: { value: false },
 }));
 
-vi.mock("@/app/lib/mikeApi", () => ({
+vi.mock("@/app/lib/zaneApi", () => ({
     getOpenRouterModels,
     getVercelModels: vi.fn().mockResolvedValue([]),
     getOpenCodeGoModels,

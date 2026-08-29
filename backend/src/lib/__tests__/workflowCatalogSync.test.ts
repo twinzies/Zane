@@ -20,7 +20,7 @@ const COMMIT = "b".repeat(40);
 
 async function sourceArchive() {
   const zip = new JSZip();
-  const archiveRoot = "mike-workflows-test";
+  const archiveRoot = "zane-workflows-test";
   const root = `${archiveRoot}/assistant-workflows/proofread`;
   zip.file(
     `${root}/SKILL.md`,
@@ -124,7 +124,7 @@ describe("workflow catalog synchronization", () => {
       });
       expect(storage.uploadFile).toHaveBeenCalledOnce();
       const [name, args] = rpc.mock.calls[0];
-      expect(name).toBe("replace_mike_workflows");
+      expect(name).toBe("replace_zane_workflows");
       expect(args.p_source_commit).toBe(COMMIT);
       expect(args.p_workflows).toEqual(
         expect.arrayContaining([
@@ -134,7 +134,7 @@ describe("workflow catalog synchronization", () => {
               expect.objectContaining({
                 filename: "template.docx",
                 storage_path: expect.stringContaining(
-                  "mike-workflows/proofread/",
+                  "zane-workflows/proofread/",
                 ),
               }),
             ],

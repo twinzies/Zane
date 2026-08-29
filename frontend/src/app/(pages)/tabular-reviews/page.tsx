@@ -14,7 +14,7 @@ import {
     createTabularReview,
     listProjects,
     updateTabularReview,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import type { TabularReview, Project } from "@/app/components/shared/types";
 import { TableToolbar } from "@/app/components/shared/TableToolbar";
 import { NewTRModal } from "@/app/components/tabular/NewTRModal";

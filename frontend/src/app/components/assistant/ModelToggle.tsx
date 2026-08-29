@@ -9,7 +9,7 @@ import {
   type ReasoningLevel,
 } from "@/shared/ui/ModelToggleUI";
 import { isModelAvailable } from "@/app/lib/modelAvailability";
-import type { ApiKeyState } from "@/app/lib/mikeApi";
+import type { ApiKeyState } from "@/app/lib/zaneApi";
 import { useOllamaModels } from "@/app/hooks/useOllamaModels";
 
 export type ModelOption = ModelToggleOption;

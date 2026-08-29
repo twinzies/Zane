@@ -30,8 +30,8 @@ import {
     streamTabularGeneration,
     updateTabularReview,
     uploadReviewDocument,
-    MikeApiError,
-} from "@/app/lib/mikeApi";
+    ZaneApiError,
+} from "@/app/lib/zaneApi";
 import type {
     ColumnConfig,
     Document,
@@ -337,7 +337,7 @@ export function TRView({ reviewId, projectId }: Props) {
             );
         } catch (err) {
             if (
-                err instanceof MikeApiError &&
+                err instanceof ZaneApiError &&
                 (err.code === "review_running" || err.code === "review_stale")
             ) {
                 await loadLatestReview();
@@ -749,7 +749,7 @@ export function TRView({ reviewId, projectId }: Props) {
             await clearTabularCells(reviewId, rowIds);
         } catch (err) {
             if (
-                err instanceof MikeApiError &&
+                err instanceof ZaneApiError &&
                 (err.code === "review_running" || err.code === "review_stale")
             ) {
                 await loadLatestReview();

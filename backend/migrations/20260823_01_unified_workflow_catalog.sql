@@ -1,7 +1,7 @@
 -- Migration date: 2026-08-23
--- Store every Mike-authored workflow in one versioned runtime catalog.
+-- Store every zane-authored workflow in one versioned runtime catalog.
 
-create table if not exists public.mike_workflows (
+create table if not exists public.zane_workflows (
   id uuid primary key default gen_random_uuid(),
   workflow_key text not null,
   distribution text not null,
@@ -30,41 +30,41 @@ create table if not exists public.mike_workflows (
   active boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  constraint mike_workflows_key_hash_unique
+  constraint zane_workflows_key_hash_unique
     unique(workflow_key, content_hash),
-  constraint mike_workflows_distribution_check
+  constraint zane_workflows_distribution_check
     check(distribution in ('default', 'addon')),
-  constraint mike_workflows_type_check
+  constraint zane_workflows_type_check
     check(type in ('assistant', 'tabular')),
-  constraint mike_workflows_source_commit_check
+  constraint zane_workflows_source_commit_check
     check(source_commit is null or source_commit ~ '^[0-9a-f]{40}$'),
-  constraint mike_workflows_content_hash_check
+  constraint zane_workflows_content_hash_check
     check(content_hash ~ '^[0-9a-f]{64}$')
 );
 
-create unique index if not exists mike_workflows_active_key_idx
-  on public.mike_workflows(workflow_key)
+create unique index if not exists zane_workflows_active_key_idx
+  on public.zane_workflows(workflow_key)
   where active;
 
-create index if not exists mike_workflows_active_distribution_type_idx
-  on public.mike_workflows(active, distribution, type, title);
+create index if not exists zane_workflows_active_distribution_type_idx
+  on public.zane_workflows(active, distribution, type, title);
 
-create index if not exists mike_workflows_active_pack_idx
-  on public.mike_workflows(active, pack_key, title);
+create index if not exists zane_workflows_active_pack_idx
+  on public.zane_workflows(active, pack_key, title);
 
-create table if not exists public.mike_workflow_reference_files (
+create table if not exists public.zane_workflow_reference_files (
   id uuid primary key default gen_random_uuid(),
-  mike_workflow_id uuid not null
-    references public.mike_workflows(id) on delete cascade,
+  zane_workflow_id uuid not null
+    references public.zane_workflows(id) on delete cascade,
   filename text not null,
   file_type text not null,
   storage_path text not null,
   size_bytes integer,
   content_hash text not null,
   created_at timestamptz not null default now(),
-  constraint mike_workflow_reference_files_name_unique
-    unique(mike_workflow_id, filename),
-  constraint mike_workflow_reference_files_hash_check
+  constraint zane_workflow_reference_files_name_unique
+    unique(zane_workflow_id, filename),
+  constraint zane_workflow_reference_files_hash_check
     check(content_hash ~ '^[0-9a-f]{64}$')
 );
 
@@ -75,7 +75,7 @@ do $$
 begin
   if to_regclass('public.workflow_addons') is not null then
     execute $backfill$
-      insert into public.mike_workflows (
+      insert into public.zane_workflows (
         workflow_key, distribution, version, title, description, type,
         prompt_md, columns_config, contributors, language, practice,
         jurisdictions, pack_key, pack_title, pack_description, pack_version,
@@ -94,8 +94,8 @@ begin
   if to_regclass('public.workflow_addon_reference_files') is not null
      and to_regclass('public.workflow_addons') is not null then
     execute $references$
-      insert into public.mike_workflow_reference_files (
-        mike_workflow_id, filename, file_type, storage_path,
+      insert into public.zane_workflow_reference_files (
+        zane_workflow_id, filename, file_type, storage_path,
         size_bytes, content_hash, created_at
       )
       select
@@ -104,10 +104,10 @@ begin
         reference.content_hash, reference.created_at
       from public.workflow_addon_reference_files reference
       join public.workflow_addons addon on addon.id = reference.addon_id
-      join public.mike_workflows catalog
+      join public.zane_workflows catalog
         on catalog.workflow_key = addon.addon_key
        and catalog.content_hash = addon.content_hash
-      on conflict (mike_workflow_id, filename) do nothing
+      on conflict (zane_workflow_id, filename) do nothing
     $references$;
   end if;
 end;
@@ -115,7 +115,7 @@ $$;
 
 -- Replace the active catalog as one transaction. Content-addressed historical
 -- rows remain available for old builtin-* workflow references.
-create or replace function public.replace_mike_workflows(
+create or replace function public.replace_zane_workflows(
   p_source_commit text,
   p_workflows jsonb
 )
@@ -137,8 +137,8 @@ begin
     raise exception 'workflow catalog payload must be an array';
   end if;
 
-  perform pg_advisory_xact_lock(hashtextextended('mike_workflows', 0));
-  update public.mike_workflows set active = false where active;
+  perform pg_advisory_xact_lock(hashtextextended('zane_workflows', 0));
+  update public.zane_workflows set active = false where active;
 
   for item in select value from jsonb_array_elements(p_workflows)
   loop
@@ -149,7 +149,7 @@ begin
       from jsonb_array_elements_text(item->'jurisdictions');
     end if;
 
-    insert into public.mike_workflows (
+    insert into public.zane_workflows (
       workflow_key, distribution, version, title, description, type,
       prompt_md, columns_config, contributors, language, practice,
       jurisdictions, pack_key, pack_title, pack_description, pack_version,
@@ -213,8 +213,8 @@ begin
       updated_at = now()
     returning id into workflow_uuid;
 
-    delete from public.mike_workflow_reference_files
-    where mike_workflow_id = workflow_uuid;
+    delete from public.zane_workflow_reference_files
+    where zane_workflow_id = workflow_uuid;
 
     if item ? 'reference_files' then
       if jsonb_typeof(item->'reference_files') <> 'array' then
@@ -223,8 +223,8 @@ begin
       for reference_item in
         select value from jsonb_array_elements(item->'reference_files')
       loop
-        insert into public.mike_workflow_reference_files (
-          mike_workflow_id, filename, file_type, storage_path,
+        insert into public.zane_workflow_reference_files (
+          zane_workflow_id, filename, file_type, storage_path,
           size_bytes, content_hash
         ) values (
           workflow_uuid,
@@ -252,7 +252,7 @@ security definer
 set search_path = public
 as $$
 declare
-  catalog_item public.mike_workflows%rowtype;
+  catalog_item public.zane_workflows%rowtype;
   workflow_uuid uuid;
   installed_count integer := 0;
 begin
@@ -260,7 +260,7 @@ begin
 
   for catalog_item in
     select catalog.*
-    from public.mike_workflows catalog
+    from public.zane_workflows catalog
     where catalog.active
       and catalog.distribution = 'default'
     order by catalog.default_sort_order nulls last, catalog.workflow_key
@@ -338,20 +338,20 @@ begin
 end;
 $$;
 
-revoke all on public.mike_workflows from anon, authenticated;
-revoke all on public.mike_workflow_reference_files from anon, authenticated;
-revoke all on function public.replace_mike_workflows(text, jsonb)
+revoke all on public.zane_workflows from anon, authenticated;
+revoke all on public.zane_workflow_reference_files from anon, authenticated;
+revoke all on function public.replace_zane_workflows(text, jsonb)
   from public, anon, authenticated;
 revoke all on function public.install_missing_default_workflows(text)
   from public, anon, authenticated;
 
 grant select, insert, update, delete
-  on public.mike_workflows,
-     public.mike_workflow_reference_files
+  on public.zane_workflows,
+     public.zane_workflow_reference_files
   to service_role;
 
 grant execute
-  on function public.replace_mike_workflows(text, jsonb)
+  on function public.replace_zane_workflows(text, jsonb)
   to service_role;
 
 grant execute

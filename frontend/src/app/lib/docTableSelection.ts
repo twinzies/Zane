@@ -1,5 +1,5 @@
-export const MULTI_DOCUMENT_DRAG_TYPE = "application/mike-docs";
-export const SINGLE_DOCUMENT_DRAG_TYPE = "application/mike-doc";
+export const MULTI_DOCUMENT_DRAG_TYPE = "application/zane-docs";
+export const SINGLE_DOCUMENT_DRAG_TYPE = "application/zane-doc";
 
 export function selectedDocumentRange(
     visibleDocumentIds: readonly string[],

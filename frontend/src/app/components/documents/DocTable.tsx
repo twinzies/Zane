@@ -25,7 +25,7 @@ import {
     deleteDocumentVersion,
     renameDocumentVersion,
     type DocumentVersion,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import type {
     Document,
     Folder as ProjectFolder,
@@ -1166,7 +1166,7 @@ export function DocTable({
             (type) =>
                 type === SINGLE_DOCUMENT_DRAG_TYPE ||
                 type === MULTI_DOCUMENT_DRAG_TYPE ||
-                type === "application/mike-folder",
+                type === "application/zane-folder",
         );
     }
 
@@ -1533,7 +1533,7 @@ export function DocTable({
     async function handleDropOnFolder(targetFolderId: string | null, dt: DataTransfer) {
         if (!hasMovePayload(dt)) return;
         const docIds = readDocumentDragPayload(dt);
-        const subFolderId = dt.getData("application/mike-folder");
+        const subFolderId = dt.getData("application/zane-folder");
         if (docIds.length > 0) {
             const movingIds = docIds.filter((id) => {
                 const doc = documents.find((candidate) => candidate.id === id);
@@ -2267,7 +2267,7 @@ export function DocTable({
                                         e.preventDefault();
                                         return;
                                     }
-                                    e.dataTransfer.setData("application/mike-folder", folder.id);
+                                    e.dataTransfer.setData("application/zane-folder", folder.id);
                                     e.dataTransfer.effectAllowed = "move";
                                     e.stopPropagation();
                                 }}

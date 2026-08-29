@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Upload } from "lucide-react";
-import { WorkflowSlashCommandUI } from "@mike/workflow-slash-command-ui";
+import { WorkflowSlashCommandUI } from "@zane/workflow-slash-command-ui";
 import type { Workflow } from "../../types";
-import { createWorkflow } from "../../api/mikeApi";
+import { createWorkflow } from "../../api/zaneApi";
 import { Modal } from "../primitives/Modal";
 import {
   ModalFieldLabel,

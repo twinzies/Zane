@@ -145,8 +145,8 @@ export function ProjectExplorer({
     }
 
     async function handleDropOnTarget(targetFolderId: string | null, e: React.DragEvent) {
-        const docId = e.dataTransfer.getData("application/mike-doc");
-        const movingFolderId = e.dataTransfer.getData("application/mike-folder");
+        const docId = e.dataTransfer.getData("application/zane-doc");
+        const movingFolderId = e.dataTransfer.getData("application/zane-folder");
 
         if (docId && onMoveDoc) {
             const doc = documents.find((d) => d.id === docId);
@@ -162,8 +162,8 @@ export function ProjectExplorer({
 
     function isInternalDrag(e: React.DragEvent): boolean {
         return (
-            Array.from(e.dataTransfer.types).includes("application/mike-doc") ||
-            Array.from(e.dataTransfer.types).includes("application/mike-folder")
+            Array.from(e.dataTransfer.types).includes("application/zane-doc") ||
+            Array.from(e.dataTransfer.types).includes("application/zane-folder")
         );
     }
 
@@ -210,7 +210,7 @@ export function ProjectExplorer({
                             <div
                                 draggable
                                 onDragStart={(e) => {
-                                    e.dataTransfer.setData("application/mike-folder", folder.id);
+                                    e.dataTransfer.setData("application/zane-folder", folder.id);
                                     e.dataTransfer.effectAllowed = "move";
                                     e.stopPropagation();
                                 }}
@@ -284,7 +284,7 @@ export function ProjectExplorer({
                             key={`d-${doc.id}`}
                             draggable
                             onDragStart={(e) => {
-                                e.dataTransfer.setData("application/mike-doc", doc.id);
+                                e.dataTransfer.setData("application/zane-doc", doc.id);
                                 e.dataTransfer.effectAllowed = "move";
                             }}
                             onDragOver={(e) => e.stopPropagation()} // don't let doc rows affect root drag state

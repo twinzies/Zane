@@ -150,22 +150,22 @@ function Blades({ ids }: { ids: Record<string, string> }) {
     );
 }
 
-export function MikeIcon({
+export function ZaneIcon({
     spin = false,
     done = false,
     error = false,
-    mike = false,
+    zane = false,
     size = 24,
     style,
 }: {
     spin?: boolean;
     done?: boolean;
     error?: boolean;
-    mike?: boolean;
+    zane?: boolean;
     size?: number;
     style?: React.CSSProperties;
 }) {
-    void mike;
+    void zane;
     const id = useId().replace(/:/g, "");
     const darkTheme = useDarkTheme();
     const palette = error

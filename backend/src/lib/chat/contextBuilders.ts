@@ -780,7 +780,7 @@ export async function buildWorkflowStore(
   // expose them through list_workflows. Active versions sort first; inactive
   // content-addressed versions remain available as a fallback.
   const { data: catalogWorkflows, error: catalogError } = await db
-    .from("mike_workflows")
+    .from("zane_workflows")
     .select("workflow_key, title, prompt_md, active, updated_at")
     .eq("type", "assistant")
     .order("active", { ascending: false })

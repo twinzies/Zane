@@ -30,13 +30,13 @@ describe("backend-managed auth cookies", () => {
   it("uses a Secure __Host cookie in production", () => {
     const env = { NODE_ENV: "production" } as NodeJS.ProcessEnv;
     expect(authCookiesAreSecure(env)).toBe(true);
-    expect(authCookieName(env)).toBe("__Host-mike-session");
+    expect(authCookieName(env)).toBe("__Host-zane-session");
   });
 
   it("uses an unprefixed cookie for local development", () => {
     const env = { NODE_ENV: "development" } as NodeJS.ProcessEnv;
     expect(authCookiesAreSecure(env)).toBe(false);
-    expect(authCookieName(env)).toBe("mike-session");
+    expect(authCookieName(env)).toBe("zane-session");
   });
 
   it("forces HttpOnly, SameSite=Lax, Secure, and Path=/ on every session write", () => {
@@ -56,7 +56,7 @@ describe("backend-managed auth cookies", () => {
       "publishable-test-key",
       expect.objectContaining({
         cookieOptions: expect.objectContaining({
-          name: "__Host-mike-session",
+          name: "__Host-zane-session",
           httpOnly: true,
           secure: true,
           sameSite: "lax",
@@ -80,7 +80,7 @@ describe("backend-managed auth cookies", () => {
     options.cookies.setAll(
       [
         {
-          name: "__Host-mike-session",
+          name: "__Host-zane-session",
           value: "opaque-session",
           options: { maxAge: 3600, httpOnly: false, sameSite: "none" },
         },
@@ -89,7 +89,7 @@ describe("backend-managed auth cookies", () => {
     );
 
     const cookie = append.mock.calls[0][1] as string;
-    expect(cookie).toContain("__Host-mike-session=opaque-session");
+    expect(cookie).toContain("__Host-zane-session=opaque-session");
     expect(cookie).toContain("HttpOnly");
     expect(cookie).toContain("Secure");
     expect(cookie).toContain("SameSite=Lax");
@@ -124,7 +124,7 @@ describe("backend-managed auth cookies", () => {
       };
     };
     options.cookies.setAll(
-      [{ name: "__Host-mike-session", value: "opaque", options: {} }],
+      [{ name: "__Host-zane-session", value: "opaque", options: {} }],
       {},
     );
 
@@ -141,7 +141,7 @@ describe("backend-managed auth cookies", () => {
     const req = {
       headers: {
         cookie:
-          "mike-session.0=first; unrelated=keep; mike-session.1=second; mike-session-code-verifier=pkce",
+          "zane-session.0=first; unrelated=keep; zane-session.1=second; zane-session-code-verifier=pkce",
       },
       get: vi.fn().mockReturnValue(undefined),
     } as never;
@@ -151,9 +151,9 @@ describe("backend-managed auth cookies", () => {
 
     expect(append).toHaveBeenCalledTimes(3);
     expect(append.mock.calls.map((call) => call[1])).toEqual([
-      expect.stringContaining("mike-session.0="),
-      expect.stringContaining("mike-session.1="),
-      expect.stringContaining("mike-session-code-verifier="),
+      expect.stringContaining("zane-session.0="),
+      expect.stringContaining("zane-session.1="),
+      expect.stringContaining("zane-session-code-verifier="),
     ]);
     for (const [, cookie] of append.mock.calls) {
       expect(cookie).toContain("Max-Age=0");

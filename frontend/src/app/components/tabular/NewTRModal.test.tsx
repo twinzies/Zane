@@ -3,11 +3,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
     uploadProjectDocument,
     uploadStandaloneDocument,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import type { Document } from "../shared/types";
 import { NewTRModal } from "./NewTRModal";
 
-vi.mock("@/app/lib/mikeApi", () => ({
+vi.mock("@/app/lib/zaneApi", () => ({
     getProject: vi.fn(),
     listWorkflows: vi.fn(async () => []),
     uploadProjectDocument: vi.fn(),

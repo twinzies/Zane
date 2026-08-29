@@ -4,8 +4,8 @@ import {
   nearestReasoningLevelForModel,
   reasoningLevelsForModel,
   type ReasoningLevel,
-} from "@mike/model-toggle-ui";
-import { getOllamaModels, type ApiKeyStatus } from "../../api/mikeApi";
+} from "@zane/model-toggle-ui";
+import { getOllamaModels, type ApiKeyStatus } from "../../api/zaneApi";
 import {
   isModelAvailable,
   modelDisplayName,

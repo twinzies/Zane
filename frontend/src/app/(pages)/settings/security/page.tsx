@@ -20,7 +20,7 @@ import {
 import { PillButton } from "@/app/components/ui/pill-button";
 import { PasswordSettingsSection } from "@/app/components/settings/PasswordSettingsSection";
 import { useUserProfile } from "@/app/contexts/UserProfileContext";
-import { isMfaRequiredError } from "@/app/lib/mikeApi";
+import { isMfaRequiredError } from "@/app/lib/zaneApi";
 import { Modal } from "@/app/components/modals/Modal";
 import {
     MfaVerificationPopup,
@@ -256,13 +256,13 @@ export default function SecurityPage() {
 
             let data;
             try {
-                data = await enrollMfa("Mike");
+                data = await enrollMfa("zane");
             } catch (error) {
                 if (!isDuplicateFriendlyNameError(error)) throw error;
                 traceMfa("[security/mfa] retrying enrollment with unique name", {
                     error: error instanceof Error ? error.message : String(error),
                 });
-                data = await enrollMfa(`Mike ${Date.now()}`);
+                data = await enrollMfa(`zane ${Date.now()}`);
             }
             traceMfa("[security/mfa] enrollment created", {
                 factorId: data.id,

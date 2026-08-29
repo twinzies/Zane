@@ -48,7 +48,7 @@ describe("workflow add-on catalog routes", () => {
 
   it("lists only active add-ons and preserves the public addon_key field", async () => {
     from.mockImplementation((table: string) => {
-      expect(table).toBe("mike_workflows");
+      expect(table).toBe("zane_workflows");
       return queryReturning([
         {
           id: "catalog-1",

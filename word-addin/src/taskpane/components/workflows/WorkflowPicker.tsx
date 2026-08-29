@@ -4,7 +4,7 @@ import { Spinner } from "../../../shared/ui/spinner";
 import {
   listWorkflows,
   updateWorkflow,
-} from "../../api/mikeApi";
+} from "../../api/zaneApi";
 import { WorkflowList } from "./WorkflowList";
 import { PageTitle } from "../primitives/PageTitle";
 import { WorkflowReferenceFiles } from "./WorkflowReferenceFiles";

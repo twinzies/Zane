@@ -3,17 +3,17 @@ import { useAuth } from "./useAuth";
 import { Input } from "../../shared/ui/input";
 import { Label } from "../../shared/ui/label";
 import { WordAddinLogo } from "../components/shell/WordAddinLogo";
-import { PillButtonUI as PillButton } from "@mike/pill-button-ui";
-import { GoogleIconUI } from "@mike/google-icon-ui";
-import { AuthDividerUI as AuthDivider } from "@mike/auth-divider-ui";
+import { PillButtonUI as PillButton } from "@zane/pill-button-ui";
+import { GoogleIconUI } from "@zane/google-icon-ui";
+import { AuthDividerUI as AuthDivider } from "@zane/auth-divider-ui";
 import {
   authGlassCardUIClassName,
   authInputUIClassName,
-} from "@mike/auth-styles-ui";
+} from "@zane/auth-styles-ui";
 import { Loader2 } from "lucide-react";
 
 const WEB_APP_URL = (
-  process.env.REACT_APP_WEB_APP_URL || "https://app.mikeoss.com"
+  process.env.REACT_APP_WEB_APP_URL || "https://app.zaneoss.com"
 ).replace(/\/+$/, "");
 
 function openWebAuthPage(

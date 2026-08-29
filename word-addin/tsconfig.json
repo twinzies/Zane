@@ -27,52 +27,52 @@
       "@radix-ui/react-dropdown-menu": [
         "node_modules/@radix-ui/react-dropdown-menu"
       ],
-      "@mike/edit-card-ui": [
+      "@zane/edit-card-ui": [
         "../frontend/src/shared/ui/EditCardUI.tsx"
       ],
-      "@mike/edit-cards-section-ui": [
+      "@zane/edit-cards-section-ui": [
         "../frontend/src/shared/ui/EditCardsSectionUI.tsx"
       ],
-      "@mike/pre-response-wrapper-ui": [
+      "@zane/pre-response-wrapper-ui": [
         "../frontend/src/shared/ui/PreResponseWrapperUI.tsx"
       ],
-      "@mike/document-event-blocks-ui": [
+      "@zane/document-event-blocks-ui": [
         "../frontend/src/shared/ui/DocumentEventBlocksUI.tsx"
       ],
-      "@mike/glass-card-ui": [
+      "@zane/glass-card-ui": [
         "../frontend/src/shared/ui/GlassCardUI.tsx"
       ],
-      "@mike/modal-ui": [
+      "@zane/modal-ui": [
         "../frontend/src/shared/ui/ModalUI.tsx"
       ],
-      "@mike/header-buttons-ui": [
+      "@zane/header-buttons-ui": [
         "../frontend/src/shared/ui/HeaderButtonsUI.tsx"
       ],
-      "@mike/pill-button-ui": [
+      "@zane/pill-button-ui": [
         "../frontend/src/shared/ui/PillButtonUI.tsx"
       ],
-      "@mike/dropdown-ui": [
+      "@zane/dropdown-ui": [
         "../frontend/src/shared/ui/DropdownUI.tsx"
       ],
-      "@mike/citation-pill-ui": [
+      "@zane/citation-pill-ui": [
         "../frontend/src/shared/ui/CitationPillUI.tsx"
       ],
-      "@mike/model-toggle-ui": [
+      "@zane/model-toggle-ui": [
         "../frontend/src/shared/ui/ModelToggleUI.tsx"
       ],
-      "@mike/mike-icon-ui": [
-        "../frontend/src/shared/ui/MikeIconUI.tsx"
+      "@zane/zane-icon-ui": [
+        "../frontend/src/shared/ui/zaneIconUI.tsx"
       ],
-      "@mike/google-icon-ui": [
+      "@zane/google-icon-ui": [
         "../frontend/src/shared/ui/GoogleIconUI.tsx"
       ],
-      "@mike/auth-styles-ui": [
+      "@zane/auth-styles-ui": [
         "../frontend/src/shared/ui/AuthStylesUI.ts"
       ],
-      "@mike/auth-divider-ui": [
+      "@zane/auth-divider-ui": [
         "../frontend/src/shared/ui/AuthDividerUI.tsx"
       ],
-      "@mike/workflow-slash-command-ui": [
+      "@zane/workflow-slash-command-ui": [
         "../frontend/src/shared/ui/WorkflowSlashCommandUI.tsx"
       ]
     },

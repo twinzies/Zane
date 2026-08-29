@@ -5,14 +5,14 @@ import Image from "next/image";
 import { MoreHorizontal } from "lucide-react";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useUserProfile } from "@/app/contexts/UserProfileContext";
-import { MikeIcon } from "@/app/components/chat/mike-icon";
+import { ZaneIcon } from "@/app/components/chat/zane-icon";
 import { ChatInput, type ChatInputHandle } from "./ChatInput";
 import { QuickActionsModal } from "./QuickActionsModal";
 import {
     createQuickAction,
     listQuickActions,
     updateQuickAction,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import type { Message, QuickAction } from "../shared/types";
 import {
     LIQUID_GLASS_HOVER_CLASS,
@@ -44,8 +44,8 @@ export function InitialView({ onSubmit }: InitialViewProps) {
         let cancelled = false;
         listQuickActions()
             .then(async (actions) => {
-                const legacyKey = "mike.quickActions.visible";
-                const migratedKey = "mike.quickActions.databaseMigrated";
+                const legacyKey = "zane.quickActions.visible";
+                const migratedKey = "zane.quickActions.databaseMigrated";
                 let resolved = actions;
                 if (!window.localStorage.getItem(migratedKey)) {
                     try {
@@ -191,7 +191,7 @@ export function InitialView({ onSubmit }: InitialViewProps) {
                                 "transform 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
                         }}
                     >
-                        <MikeIcon size={ICON_SIZE} />
+                        <ZaneIcon size={ICON_SIZE} />
                     </div>
                     <h1
                         ref={textRef}

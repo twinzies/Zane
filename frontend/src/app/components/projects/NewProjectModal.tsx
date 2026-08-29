@@ -6,11 +6,11 @@ import {
     addDocumentToProject,
     createProject,
     uploadProjectDocument,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import { FileDirectory } from "../shared/FileDirectory";
 import { AddUserInput } from "../shared/AddUserInput";
 import type { Document, Project } from "../shared/types";
-import type { UserLookupResult } from "@/app/lib/mikeApi";
+import type { UserLookupResult } from "@/app/lib/zaneApi";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { Modal } from "../modals/Modal";
 import { FieldLabel, FormTextInput } from "../ui/form-field";

@@ -10,13 +10,13 @@ import type { ReasoningLevel } from "../lib/wordChatTypes";
 
 type AuthHeaderProvider = () => Promise<Record<string, string>>;
 
-interface MikeApiClientConfig {
+interface ZaneApiClientConfig {
   baseUrl?: string;
   getAuthHeaders?: AuthHeaderProvider;
   fetchImpl?: typeof fetch;
 }
 
-interface ResolvedMikeApiClientConfig {
+interface ResolvedZaneApiClientConfig {
   baseUrl: string;
   getAuthHeaders: AuthHeaderProvider;
   fetchImpl: typeof fetch;
@@ -27,19 +27,19 @@ const devLog = (...args: Parameters<typeof console.log>): void => {
   if (isDev) console.log(...args);
 };
 
-class MikeApiError extends Error {
+class ZaneApiError extends Error {
   readonly status: number;
   readonly code: string | null;
 
   constructor(args: { message: string; status: number; code?: string | null }) {
     super(args.message);
-    this.name = "MikeApiError";
+    this.name = "ZaneApiError";
     this.status = args.status;
     this.code = args.code ?? null;
   }
 }
 
-let clientConfig: ResolvedMikeApiClientConfig = {
+let clientConfig: ResolvedZaneApiClientConfig = {
   baseUrl: "http://localhost:3001",
   getAuthHeaders: async () => ({}),
   // A wrapper keeps native fetch detached from the config object. Chromium
@@ -47,7 +47,7 @@ let clientConfig: ResolvedMikeApiClientConfig = {
   fetchImpl: (...args: Parameters<typeof fetch>) => fetch(...args),
 };
 
-export function configureMikeApiClient(config: MikeApiClientConfig): void {
+export function configureZaneApiClient(config: ZaneApiClientConfig): void {
   clientConfig = {
     baseUrl: config.baseUrl ?? clientConfig.baseUrl,
     getAuthHeaders: config.getAuthHeaders ?? clientConfig.getAuthHeaders,
@@ -87,7 +87,7 @@ async function sendRequest(
 async function toApiError(
   response: Response,
   path: string,
-): Promise<MikeApiError> {
+): Promise<ZaneApiError> {
   const text = await response.text();
   try {
     const parsed = JSON.parse(text) as {
@@ -107,24 +107,24 @@ async function toApiError(
         : typeof parsed.detail === "string" && parsed.detail
           ? parsed.detail
           : `API error: ${response.status}`;
-    devLog("[mike-api] non-ok response", {
+    devLog("[zane-api] non-ok response", {
       path,
       status: response.status,
       code,
       detail: parsed.detail,
     });
-    return new MikeApiError({
+    return new ZaneApiError({
       status: response.status,
       code,
       message,
     });
   } catch {
-    devLog("[mike-api] non-ok non-json response", {
+    devLog("[zane-api] non-ok non-json response", {
       path,
       status: response.status,
       bodyPreview: text.slice(0, 200),
     });
-    return new MikeApiError({
+    return new ZaneApiError({
       status: response.status,
       message: text || `API error: ${response.status}`,
     });

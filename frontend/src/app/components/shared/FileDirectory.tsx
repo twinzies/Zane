@@ -21,7 +21,7 @@ import { useDebouncedValue } from "@/app/hooks/useDebouncedValue";
 import {
   searchLibraryDocuments,
   searchProjectDirectory,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import {
     LIQUID_GLASS_MODAL_ROW_HOVER_CLASS,
     LIQUID_GLASS_MODAL_ROW_SELECTED_CLASS,

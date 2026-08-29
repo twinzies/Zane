@@ -13,7 +13,7 @@ import {
     Trash2,
     X,
 } from "lucide-react";
-import { MikeIcon } from "@/app/components/chat/mike-icon";
+import { ZaneIcon } from "@/app/components/chat/zane-icon";
 import {
     streamTabularChat,
     getTabularChats,
@@ -24,7 +24,7 @@ import {
     mapTRMessages,
     type TRChat,
     type TRCitationAnnotation,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import {
     isPanelDocument,
     type AssistantEvent,
@@ -176,10 +176,10 @@ function TRResponseStatus({ isActive }: { isActive: boolean }) {
 
     return (
         <div className="w-full h-9 flex items-center mb-2">
-            <MikeIcon
+            <ZaneIcon
                 spin={isActive}
                 done={showDone && doneVisible}
-                mike={!(showDone && doneVisible)}
+                zane={!(showDone && doneVisible)}
                 size={22}
             />
         </div>

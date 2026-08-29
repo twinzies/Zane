@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Download, ExternalLink, Loader2 } from "lucide-react";
-import { API_BASE } from "@/app/lib/mikeApi";
+import { API_BASE } from "@/app/lib/zaneApi";
 import { authenticatedFetch } from "@/app/lib/authEvents";
 import { PillButton } from "@/app/components/ui/pill-button";
 import { PdfView } from "../shared/views/PdfView";

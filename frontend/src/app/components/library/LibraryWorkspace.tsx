@@ -41,7 +41,7 @@ import {
   searchLibraryDocuments,
     uploadLibraryDocument,
     type LibraryKind,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import type { Document } from "@/app/components/shared/types";
 import { useDebouncedValue } from "@/app/hooks/useDebouncedValue";
 

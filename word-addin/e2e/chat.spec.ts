@@ -95,7 +95,7 @@ test("uses a floating icon header with no logo, tabs, or visible sign-out button
   await addin.expectAuthedShell();
 
   await expect(page.getByRole("tab")).toHaveCount(0);
-  await expect(page.getByText("Mike", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("zane", { exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Sign out" })).toHaveCount(0);
 
   const header = page.getByTestId("floating-header");
@@ -275,7 +275,7 @@ test("does not send without the required Word document context", async ({
   await page.getByRole("button", { name: "Send" }).click();
 
   await expect(page.getByRole("alert")).toHaveText(
-    "Mike couldn't read the current Word document. Please try again.",
+    "zane couldn't read the current Word document. Please try again.",
   );
   await expect(composer).toHaveValue("Review this document");
   await expect(page.locator("[data-message-id]")).toHaveCount(0);
@@ -724,7 +724,7 @@ test("uses Web Crypto for document IDs when randomUUID is unavailable", async ({
   expect(body.document_id).toMatch(
     /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
   );
-  expect((await addin.wordDocument()).settings["mike.word.documentId.v1"]).toBe(
+  expect((await addin.wordDocument()).settings["zane.word.documentId.v1"]).toBe(
     body.document_id,
   );
 });
@@ -745,7 +745,7 @@ test("a Save As copy of the document mints a fresh chat identity", async ({
   // Simulate "Save As": document settings travel inside the .docx (the mock
   // persists them in sessionStorage), but the copy opens from a new URL. Seed
   // a stale anchor registry to prove the copy does not inherit it either.
-  await addin.setWordDocumentSetting("mike.wordEditAnchors.v1", {
+  await addin.setWordDocumentSetting("zane.wordEditAnchors.v1", {
     version: 1,
     anchors: {},
   });
@@ -764,11 +764,11 @@ test("a Save As copy of the document mints a fresh chat identity", async ({
   );
   expect(secondId).not.toBe(firstId);
   const { settings } = await addin.wordDocument();
-  expect(settings["mike.word.documentId.v1"]).toBe(secondId);
-  expect(settings["mike.word.documentUrl.v1"]).toBe(
+  expect(settings["zane.word.documentId.v1"]).toBe(secondId);
+  expect(settings["zane.word.documentUrl.v1"]).toBe(
     "c:/users/e2e/demo contract (copy).docx",
   );
-  expect(settings["mike.wordEditAnchors.v1"]).toBeUndefined();
+  expect(settings["zane.wordEditAnchors.v1"]).toBeUndefined();
 });
 
 test("keeps the existing identity when either document URL is unknown", async ({
@@ -786,7 +786,7 @@ test("keeps the existing identity when either document URL is unknown", async ({
 
   // Pre-URL-tracking upgrade path: an identity exists but no URL was stored.
   // Even at a brand-new URL this must NOT count as a copy.
-  await addin.removeWordDocumentSetting("mike.word.documentUrl.v1");
+  await addin.removeWordDocumentSetting("zane.word.documentUrl.v1");
   await addin.gotoTaskpane({
     documentUrl: "C:/Users/e2e/Renamed Contract.docx",
   });
@@ -807,7 +807,7 @@ test("keeps the existing identity when either document URL is unknown", async ({
   await page.getByRole("button", { name: "Send" }).click();
   expect((await thirdRequest).postDataJSON().document_id).toBe(firstId);
   expect(
-    (await addin.wordDocument()).settings["mike.word.documentUrl.v1"],
+    (await addin.wordDocument()).settings["zane.word.documentUrl.v1"],
   ).toBe("c:/users/e2e/renamed contract.docx");
 });
 
@@ -1024,14 +1024,14 @@ test("the composer swaps Send for a Stop control while streaming, then restores"
     .locator("[data-assistant-message-id]")
     .last()
     .getByTestId("assistant-response-status");
-  const mikeLoader = responseStatus.locator('svg[viewBox="100 100 300 300"]');
+  const zaneLoader = responseStatus.locator('svg[viewBox="100 100 300 300"]');
 
   // While streaming: the textarea remains available for composing the next
   // turn, while Send is replaced by a reachable Stop control.
   await expect(input).toBeEnabled();
   await expect(page.getByRole("button", { name: "Stop" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Send" })).toHaveCount(0);
-  await expect(mikeLoader).toBeVisible();
+  await expect(zaneLoader).toBeVisible();
   await expect(
     page
       .locator("[data-assistant-message-id]")
@@ -1046,7 +1046,7 @@ test("the composer swaps Send for a Stop control while streaming, then restores"
   ).toHaveCount(0);
   await expect
     .poll(() =>
-      mikeLoader.evaluate(
+      zaneLoader.evaluate(
         (icon) => (icon.parentElement as HTMLElement).style.animationPlayState,
       ),
     )
@@ -1058,7 +1058,7 @@ test("the composer swaps Send for a Stop control while streaming, then restores"
   await expect(page.getByRole("button", { name: "Send" })).toBeVisible();
   await expect
     .poll(() =>
-      mikeLoader.evaluate(
+      zaneLoader.evaluate(
         (icon) => (icon.parentElement as HTMLElement).style.animationPlayState,
       ),
     )
@@ -2269,7 +2269,7 @@ test("does not broaden one edit across repeated exact passages", async ({
 
   await expect(
     page.getByText(
-      "Skipped — this text appears 2 times in the document. Tell Mike which one to change.",
+      "Skipped — this text appears 2 times in the document. Tell zane which one to change.",
     ),
   ).toBeVisible();
   await expect(
