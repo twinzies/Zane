@@ -10,6 +10,8 @@ services:
   # --- Supabase: Postgres (ships base roles, the `auth` schema, auth.uid, etc.)
   db:
     image: supabase/postgres:17.6.1.136
+    # This tag's arm64 variant has an empty entrypoint; use the intact amd64 image.
+    platform: linux/amd64
     ports:
       # ponytail: infra ports bind loopback only — reachable from the host for
       # debugging, never from the internet. Compose networking is unaffected, so
@@ -117,6 +119,7 @@ services:
   # --- One-shot: load schema.sql once auth.users exists; grant service_role.
   db-init:
     image: supabase/postgres:17.6.1.136
+    platform: linux/amd64
     depends_on:
       db:
         condition: service_healthy
