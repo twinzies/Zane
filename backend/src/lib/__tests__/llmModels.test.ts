@@ -2,6 +2,9 @@ import { describe, it, expect } from "vitest";
 import {
     CLAUDE_MAIN_MODELS,
     GEMINI_MAIN_MODELS,
+    MOONSHOT_MAIN_MODELS,
+    MOONSHOT_MID_MODELS,
+    MOONSHOT_LOW_MODELS,
     OPENAI_MAIN_MODELS,
     CLAUDE_MID_MODELS,
     GEMINI_MID_MODELS,
@@ -57,6 +60,25 @@ describe("providerForModel", () => {
         ]) {
             expect(providerForModel(model)).toBe("openai");
         }
+    });
+
+    it("maps bare kimi-* ids to the moonshot provider", () => {
+        for (const model of [
+            ...MOONSHOT_MAIN_MODELS,
+            ...MOONSHOT_MID_MODELS,
+            ...MOONSHOT_LOW_MODELS,
+        ]) {
+            expect(providerForModel(model)).toBe("moonshot");
+        }
+    });
+
+    it("keeps router-prefixed Kimi ids on their router, not moonshot", () => {
+        // OpenCode Go publishes its own kimi-* catalog; the router prefix is
+        // matched before the bare-id rule so those keep routing through it.
+        expect(providerForModel("opencode-go/kimi-k3")).toBe("opencode-go");
+        expect(providerForModel("openrouter/moonshotai/kimi-k2")).toBe(
+            "openrouter",
+        );
     });
 
     it("maps namespaced OpenRouter ids to the openrouter provider", () => {

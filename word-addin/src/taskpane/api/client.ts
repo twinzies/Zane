@@ -217,6 +217,7 @@ export interface ApiKeyStatus {
   claude: boolean;
   gemini: boolean;
   openai: boolean;
+  moonshot: boolean;
   openrouter: boolean;
   vercel: boolean;
   "opencode-go": boolean;

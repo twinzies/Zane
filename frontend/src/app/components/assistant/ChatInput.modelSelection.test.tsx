@@ -68,6 +68,7 @@ function emptyApiKeys() {
         claude: { configured: false, source: null },
         gemini: { configured: false, source: null },
         openai: { configured: false, source: null },
+        moonshot: { configured: false, source: null },
         openrouter: { configured: false, source: null },
         vercel: { configured: false, source: null },
         courtlistener: { configured: false, source: null },

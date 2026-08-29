@@ -162,6 +162,7 @@ describe("word add-in catalog parity", () => {
                 claude: false,
                 gemini: false,
                 openai: false,
+                moonshot: false,
                 openrouter: false,
                 vercel: false,
                 "opencode-go": false,

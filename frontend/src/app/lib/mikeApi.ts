@@ -568,6 +568,7 @@ export type ApiKeyProvider =
     | "claude"
     | "gemini"
     | "openai"
+    | "moonshot"
     | "openrouter"
     | "vercel"
     | "opencode-go"

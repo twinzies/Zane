@@ -20,6 +20,10 @@ describe("normalizeApiKeyProvider", () => {
         expect(normalizeApiKeyProvider("gemini")).toBe("gemini");
     });
 
+    it('returns "moonshot" for "moonshot"', () => {
+        expect(normalizeApiKeyProvider("moonshot")).toBe("moonshot");
+    });
+
     it("returns the supported router providers", () => {
         expect(normalizeApiKeyProvider("openrouter")).toBe("openrouter");
         expect(normalizeApiKeyProvider("vercel")).toBe("vercel");
@@ -44,6 +48,7 @@ describe("hasEnvApiKey", () => {
         "AI_GATEWAY_API_KEY",
         "VERCEL_AI_GATEWAY_API_KEY",
         "OPENCODE_API_KEY",
+        "MOONSHOT_API_KEY",
         "USER_API_KEYS_ENCRYPTION_SECRET",
     ];
 
@@ -90,6 +95,11 @@ describe("hasEnvApiKey", () => {
     it("returns true for OpenCode Go when OPENCODE_API_KEY is set", () => {
         process.env.OPENCODE_API_KEY = "opencode-key-test";
         expect(hasEnvApiKey("opencode-go")).toBe(true);
+    });
+
+    it("returns true for moonshot when MOONSHOT_API_KEY is set", () => {
+        process.env.MOONSHOT_API_KEY = "moonshot-key-test";
+        expect(hasEnvApiKey("moonshot")).toBe(true);
     });
 
     it("returns false when no env key is set for the provider", () => {

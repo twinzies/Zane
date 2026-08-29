@@ -63,6 +63,7 @@ function apiProfile(darkMode: boolean) {
             kimi: false,
             gemini: false,
             openai: false,
+            moonshot: false,
             openrouter: false,
             courtlistener: false,
             sources: {},

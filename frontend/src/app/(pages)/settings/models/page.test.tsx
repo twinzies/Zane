@@ -18,6 +18,7 @@ vi.mock("@/app/contexts/UserProfileContext", () => ({
                 claude: { configured: false, source: null },
                 gemini: { configured: true, source: "user" },
                 openai: { configured: true, source: "user" },
+                moonshot: { configured: false, source: null },
                 openrouter: { configured: false, source: null },
                 vercel: { configured: false, source: null },
                 "opencode-go": { configured: false, source: null },

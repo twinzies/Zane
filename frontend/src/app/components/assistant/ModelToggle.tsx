@@ -32,6 +32,9 @@ export const MODELS: ModelOption[] = [
   { id: "gpt-5.6-luna", label: "GPT-5.6 Luna", group: "OpenAI" },
   { id: "gpt-5.5", label: "GPT-5.5", group: "OpenAI" },
   { id: "gpt-5.4", label: "GPT-5.4", group: "OpenAI" },
+  // Direct Moonshot API. Kept in sync with backend MOONSHOT_MAIN_MODELS.
+  { id: "kimi-k3", label: "Kimi K3", group: "Moonshot AI" },
+  { id: "kimi-k2.6", label: "Kimi K2.6", group: "Moonshot AI" },
   // Local (Ollama) models are appended dynamically — see useOllamaModels.
 ];
 

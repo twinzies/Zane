@@ -7,6 +7,7 @@ export type ApiKeyProvider =
     | "claude"
     | "gemini"
     | "openai"
+    | "moonshot"
     | "openrouter"
     | "vercel"
     | "opencode-go"
@@ -27,6 +28,7 @@ const PROVIDERS: ApiKeyProvider[] = [
     "claude",
     "gemini",
     "openai",
+    "moonshot",
     "openrouter",
     "vercel",
     "opencode-go",
@@ -45,6 +47,8 @@ function envApiKey(provider: ApiKeyProvider): string | null {
             return process.env.GEMINI_API_KEY?.trim() || null;
         case "openai":
             return process.env.OPENAI_API_KEY?.trim() || null;
+        case "moonshot":
+            return process.env.MOONSHOT_API_KEY?.trim() || null;
         case "openrouter":
             return process.env.OPENROUTER_API_KEY?.trim() || null;
         case "vercel":
@@ -126,6 +130,7 @@ export async function getUserApiKeyStatus(
         claude: false,
         gemini: false,
         openai: false,
+        moonshot: false,
         openrouter: false,
         vercel: false,
         "opencode-go": false,
@@ -134,6 +139,7 @@ export async function getUserApiKeyStatus(
             claude: null,
             gemini: null,
             openai: null,
+            moonshot: null,
             openrouter: null,
             vercel: null,
             "opencode-go": null,
@@ -173,6 +179,7 @@ export async function getUserApiKeys(
         claude: envApiKey("claude"),
         gemini: envApiKey("gemini"),
         openai: envApiKey("openai"),
+        moonshot: envApiKey("moonshot"),
         openrouter: envApiKey("openrouter"),
         vercel: envApiKey("vercel"),
         "opencode-go": envApiKey("opencode-go"),

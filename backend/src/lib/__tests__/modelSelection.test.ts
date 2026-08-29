@@ -18,6 +18,7 @@ describe("titleModelForChat", () => {
         ["claude-fable-5", "claude-haiku-4-5"],
         ["gemini-3.7-flash", "gemini-3.5-flash-lite"],
         ["gpt-5.6-sol", "gpt-5.6-luna"],
+        ["kimi-k3", "kimi-k2.6"],
     ])(
         "uses the cheapest model from the %s provider",
         (chatModel, expected) => {

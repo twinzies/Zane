@@ -1,6 +1,7 @@
 import {
     CLAUDE_LOW_MODELS,
     GEMINI_LOW_MODELS,
+    MOONSHOT_LOW_MODELS,
     OPENAI_LOW_MODELS,
     providerForModel,
     normalizeReasoningLevelForModel,
@@ -200,6 +201,8 @@ export function titleModelForChat(
             return GEMINI_LOW_MODELS[0];
         case "openai":
             return OPENAI_LOW_MODELS[0];
+        case "moonshot":
+            return MOONSHOT_LOW_MODELS[0];
         case "openrouter":
         case "vercel":
         case "opencode-go":

@@ -22,6 +22,11 @@ const MODEL_API_KEY_FIELDS = [
         placeholder: "sk-...",
     },
     {
+        provider: "moonshot",
+        label: "Moonshot (Kimi) API Key",
+        placeholder: "sk-...",
+    },
+    {
         provider: "openrouter",
         label: "OpenRouter API Key",
         placeholder: "sk-or-...",

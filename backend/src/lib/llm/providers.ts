@@ -30,6 +30,11 @@ const OPENCODE_GO_BASE_URL =
   "https://opencode.ai/zen/go/v1";
 const VERCEL_GATEWAY_BASE_URL =
   process.env.VERCEL_AI_GATEWAY_BASE_URL?.trim().replace(/\/+$/, "");
+// Moonshot serves a separate mainland-China host (api.moonshot.cn); the
+// override exists so that deployment does not need a code change.
+const MOONSHOT_BASE_URL =
+  process.env.MOONSHOT_BASE_URL?.trim().replace(/\/+$/, "") ||
+  "https://api.moonshot.ai/v1";
 
 type CompleteProviderParams = {
   model: string;
@@ -244,6 +249,25 @@ async function createProviderAdapter(
       model: openai.responses(model),
       modelId: model,
       courtlistenerCitationReminder: true,
+    };
+  }
+
+  if (provider === "moonshot") {
+    const { createOpenAICompatible } = await import("@ai-sdk/openai-compatible");
+    const moonshot = createOpenAICompatible({
+      name: "moonshot",
+      apiKey: requiredKey("Moonshot", "MOONSHOT_API_KEY", apiKeys?.moonshot),
+      baseURL: MOONSHOT_BASE_URL,
+      fetch: aiSdkFetch,
+    });
+    return {
+      provider,
+      label: "Moonshot (Kimi)",
+      model: moonshot(model),
+      modelId: model,
+      // Moonshot's OpenAI-compatible surface does not accept OpenAI's
+      // reasoning request fields; sending them fails the request outright.
+      supportsReasoning: false,
     };
   }
 
