@@ -582,7 +582,6 @@ export function ProjectsOverview() {
                     <TableEmptyState>
                         {activeFilter === "all" || activeFilter === "mine" ? (
                             <EmptyState
-                                icon={<OpenProjectSvgIcon />}
                                 title="Projects"
                                 description="Create a project to organize chats, files, and context for ongoing legal work."
                                 action={
