@@ -332,6 +332,28 @@ export function ChatView({
         Record<string, "accepted" | "rejected">
     >({});
 
+    /**
+     * Resend the user message a failed turn was answering. The failed
+     * assistant message stays in place so the thread keeps its history; the
+     * retry appends a fresh turn.
+     */
+    const handleRetry = useCallback(
+        (assistantIndex: number) => {
+            for (let i = assistantIndex - 1; i >= 0; i -= 1) {
+                const prior = messages[i];
+                if (prior?.role !== "user") continue;
+                void handleChat({
+                    role: "user",
+                    content: prior.content,
+                    ...(prior.files?.length ? { files: prior.files } : {}),
+                    ...(prior.workflow ? { workflow: prior.workflow } : {}),
+                });
+                return;
+            }
+        },
+        [messages, handleChat],
+    );
+
     const handleEditResolveStart = useCallback(
         (args: {
             editId: string;
@@ -715,6 +737,12 @@ export function ChatView({
                                                     "string"
                                                         ? msg.error
                                                         : undefined
+                                                }
+                                                onRetry={() =>
+                                                    handleRetry(i)
+                                                }
+                                                retryDisabled={
+                                                    isResponseLoading
                                                 }
                                                 citations={msg.citations}
                                                 citationStatus={

@@ -6,6 +6,7 @@ import {
 } from "../llm";
 import { resolveRequestedModel } from "../routerModels";
 import { UserFacingError } from "../userFacingError";
+import { preserveErrorIdentity } from "../preservedError";
 import { createServerSupabase } from "../supabase";
 import { buildUserMcpTools, type McpToolEvent } from "../mcpConnectors";
 import type { SourceDocument } from "../sourceDocuments";
@@ -196,6 +197,10 @@ class AssistantStreamAskInputsPause extends Error {
   constructor() {
     super("Waiting for user input.");
     this.name = "AssistantStreamAskInputsPause";
+    // Thrown from inside a tool executor, so it travels back through the AI
+    // SDK. Without the marker the adapter rebuilds it as a plain Error and
+    // the `instanceof` check below treats this pause as a stream failure.
+    preserveErrorIdentity(this);
   }
 }
 

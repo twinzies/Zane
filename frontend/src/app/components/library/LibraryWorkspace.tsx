@@ -934,6 +934,15 @@ export function LibraryCollectionPage({
                                 </TabPillButton>
                             )}
                             <TabPillButton
+                                onClick={addDocumentsAction ?? undefined}
+                                disabled={!addDocumentsAction || loading}
+                            >
+                                <Upload className="h-3.5 w-3.5" />
+                                <span className="hidden sm:inline">
+                                    Upload {addCollectionLabel.toLowerCase()}
+                                </span>
+                            </TabPillButton>
+                            <TabPillButton
                                 onClick={uploadFolderAction ?? undefined}
                                 disabled={!uploadFolderAction || loading}
                             >

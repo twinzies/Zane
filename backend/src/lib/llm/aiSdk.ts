@@ -11,6 +11,7 @@ import type {
   StreamChatResult,
 } from "./types";
 import { createRawLlmStreamRecorder, logRawLlmStream } from "./rawStreamLog";
+import { findPreservedError } from "../preservedError";
 
 const MAX_OUTPUT_TOKENS = 16_384;
 
@@ -239,6 +240,20 @@ function toAiSdkTools(
   );
 }
 
+/**
+ * Pick the error to throw for a `tool-error` / `error` stream part.
+ *
+ * A tool executor's throw comes back through the SDK normalized into a stream
+ * part, sometimes wrapped. Rebuilding a plain Error from the message drops the
+ * class, which silently breaks callers that branch on `instanceof` — that is
+ * how a deliberate ask-inputs pause surfaced to users as a failed response. So
+ * marked errors are returned as the original object; everything else keeps the
+ * labelled provider message it had before.
+ */
+export function streamPartError(error: unknown, label: string): Error {
+  return findPreservedError(error) ?? new Error(errorMessage(error, label));
+}
+
 function errorMessage(error: unknown, label: string): string {
   if (error instanceof Error && error.message) return error.message;
   if (typeof error === "string" && error.trim()) return error;
@@ -350,9 +365,8 @@ export async function streamAiSdk(
           break;
         }
         case "tool-error":
-          throw new Error(errorMessage(part.error, config.label));
         case "error":
-          throw new Error(errorMessage(part.error, config.label));
+          throw streamPartError(part.error, config.label);
         case "abort": {
           const error = new Error(part.reason || "Stream aborted.");
           error.name = "AbortError";
