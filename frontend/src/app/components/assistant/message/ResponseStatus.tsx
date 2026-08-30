@@ -45,7 +45,6 @@ export function ResponseStatus({ status }: { status: StatusState }) {
                 spin={isActive}
                 done={showDone && doneVisible}
                 error={isError}
-                zane={!isError && !(showDone && doneVisible)}
                 size={22}
             />
         </div>

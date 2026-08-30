@@ -1,48 +1,66 @@
-import { render, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { render } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import { ZaneIcon } from "./zane-icon";
 
-function firstBladeFill(container: HTMLElement) {
-    const gradient = container.querySelector(
-        'linearGradient[id$="-m-glassFill"]',
-    );
-    const stop = gradient?.querySelector("stop");
-    return (stop as SVGStopElement | null)?.style.stopColor.replace(/\s/g, "");
+function blades(container: HTMLElement) {
+    return Array.from(container.querySelectorAll("path"));
 }
 
-afterEach(() => {
-    document.documentElement.classList.remove("dark");
-});
+function fills(container: HTMLElement) {
+    return blades(container).map((p) => p.getAttribute("fill"));
+}
 
 describe("ZaneIcon", () => {
-    it("renders the dark mark on the light theme", () => {
+    it("draws twelve blades", () => {
         const { container } = render(<ZaneIcon />);
 
-        expect(firstBladeFill(container)).toBe("rgb(10,10,10)");
+        expect(blades(container)).toHaveLength(12);
     });
 
-    it("renders the white mark when the document is in dark mode", () => {
-        document.documentElement.classList.add("dark");
+    /**
+     * The mark inherits the surrounding ink instead of subscribing to the
+     * document theme, which is what lets it render correctly in the Word
+     * add-in and anywhere the `dark` class never reaches.
+     */
+    it("inherits currentColor for the ink blades", () => {
+        const { container } = render(<ZaneIcon />);
+        const inkFills = fills(container).slice(1);
+
+        expect(inkFills).toHaveLength(11);
+        expect(new Set(inkFills)).toEqual(new Set(["currentColor"]));
+    });
+
+    it("strikes the twelve o'clock blade in the accent colour", () => {
         const { container } = render(<ZaneIcon />);
 
-        expect(firstBladeFill(container)).toBe("rgb(255,255,255)");
+        expect(fills(container)[0]).toBe("var(--zane-mark-accent, #c2410c)");
+        // The group is rotated so the accent blade points up.
+        expect(
+            container.querySelector("g")?.getAttribute("transform"),
+        ).toContain("rotate(-90)");
     });
 
-    it("swaps palettes when the theme class changes while mounted", async () => {
-        const { container } = render(<ZaneIcon />);
-        expect(firstBladeFill(container)).toBe("rgb(10,10,10)");
+    it("overrides every blade, accent included, for the error state", () => {
+        const { container } = render(<ZaneIcon error />);
 
-        document.documentElement.classList.add("dark");
-
-        await waitFor(() =>
-            expect(firstBladeFill(container)).toBe("rgb(255,255,255)"),
-        );
+        expect(new Set(fills(container))).toEqual(new Set(["#dc2626"]));
     });
 
-    it("keeps the status palettes in dark mode", () => {
-        document.documentElement.classList.add("dark");
+    it("overrides every blade for the done state", () => {
         const { container } = render(<ZaneIcon done />);
 
-        expect(firstBladeFill(container)).toBe("rgb(74,222,128)");
+        expect(new Set(fills(container))).toEqual(new Set(["#16a34a"]));
+    });
+
+    it("runs the spin animation only while spinning", () => {
+        const { container: idle } = render(<ZaneIcon />);
+        const { container: spinning } = render(<ZaneIcon spin />);
+
+        expect(
+            (idle.firstChild as HTMLElement).style.animationPlayState,
+        ).toBe("paused");
+        expect(
+            (spinning.firstChild as HTMLElement).style.animationPlayState,
+        ).toBe("running");
     });
 });

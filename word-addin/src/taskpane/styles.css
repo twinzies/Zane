@@ -33,6 +33,8 @@
         "Segoe UI", Roboto, sans-serif;
     --font-eb-garamond: "EB Garamond", Georgia, "Times New Roman", serif;
     --font-italiana: "Italiana", serif;
+    /* Accent blade of the Zane mark; see frontend globals.css. */
+    --zane-mark-accent: #c2410c;
 }
 
 /* Tiptap workflow editor, adapted from the frontend workflow page. */

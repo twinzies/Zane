@@ -179,7 +179,6 @@ function TRResponseStatus({ isActive }: { isActive: boolean }) {
             <ZaneIcon
                 spin={isActive}
                 done={showDone && doneVisible}
-                zane={!(showDone && doneVisible)}
                 size={22}
             />
         </div>

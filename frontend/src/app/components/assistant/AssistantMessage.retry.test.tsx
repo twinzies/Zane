@@ -20,7 +20,7 @@ describe("AssistantMessage retry", () => {
     it("does not offer retry on a successful turn", () => {
         render(
             <AssistantMessage
-                events={[{ type: "text", text: "All good." }]}
+                events={[{ type: "content", text: "All good." }]}
                 onRetry={vi.fn()}
             />,
         );
