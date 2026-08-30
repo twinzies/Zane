@@ -256,10 +256,9 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
             <div
                 className={cn(
                     isOpen
-                        ? "w-64 h-[calc(100dvh-1rem)] md:h-[calc(100dvh-1.5rem)]"
-                        : "max-md:hidden w-14 md:h-[calc(100dvh-1.5rem)] h-auto pointer-events-none md:pointer-events-auto",
-                    "my-2 ml-2 mr-0 md:my-3 md:ml-3 md:mr-0 rounded-2xl backdrop-blur-2xl overflow-visible",
-                    LIQUID_GLASS_FLOAT_CLASS,
+                        ? "w-64 h-dvh"
+                        : "max-md:hidden w-16 md:h-dvh h-auto pointer-events-none md:pointer-events-auto",
+                    "overflow-visible border-r border-gray-200 bg-app-surface",
                     "flex flex-col transition-all duration-300 absolute md:relative z-[99]",
                 )}
             >
@@ -302,12 +301,12 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                               : pathname === href ||
                                 pathname.startsWith(href + "/");
                     return (
-                        <div key={href} className="py-0.5 px-2.5">
+                        <div key={href} className="py-0.5 px-2">
                             <button
                                 onClick={() => router.push(href)}
                                 title={!isOpen ? label : ""}
                                 className={cn(
-                                    "w-full h-9 flex items-center gap-3 px-2.5 py-2 rounded-md transition-colors text-left",
+                                    "w-full h-10 flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-left",
                                     isActive
                                         ? `${LIQUID_GLASS_SELECTED_CLASS} text-gray-900`
                                         : `text-gray-700 ${LIQUID_GLASS_HOVER_CLASS}`,
@@ -316,7 +315,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                             >
                                 <Icon
                                     aria-hidden="true"
-                                    className={`h-4 w-4 flex-shrink-0 ${
+                                    className={`h-5 w-5 flex-shrink-0 ${
                                         isActive
                                             ? "text-gray-900"
                                             : "text-gray-700"
@@ -324,7 +323,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                                 />
                                 {isOpen && (
                                     <span
-                                        className={`text-sm font-medium ${
+                                        className={`text-[15px] font-medium ${
                                             shouldAnimate
                                                 ? "sidebar-fade-in-2"
                                                 : ""
@@ -344,7 +343,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                         <div>
                             <button
                                 onClick={() => setProjectsCollapsed((v) => !v)}
-                                className={`mb-2 flex w-full items-center justify-between px-5 text-xs font-semibold text-gray-500 transition-colors hover:text-gray-700 ${
+                                className={`mb-2 flex w-full items-center justify-between px-4 text-[13px] font-semibold text-gray-500 transition-colors hover:text-gray-700 ${
                                     shouldAnimate ? "sidebar-fade-in" : ""
                                 }`}
                             >
@@ -415,7 +414,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                                                             }
                                                             title={project.name}
                                                             className={cn(
-                                                                "flex h-8 w-full items-center gap-2 rounded-md px-2.5 py-1 text-left text-xs transition-colors",
+                                                                "flex h-9 w-full items-center gap-2.5 rounded-md px-3 py-1 text-left text-sm transition-colors",
                                                                 isActive
                                                                     ? `${LIQUID_GLASS_SELECTED_CLASS} text-gray-900`
                                                                     : `text-gray-700 ${LIQUID_GLASS_HOVER_CLASS}`,
@@ -424,12 +423,12 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                                                             {isActive ? (
                                                                 <FolderOpen
                                                                     aria-hidden="true"
-                                                                    className="h-3.5 w-3.5 shrink-0"
+                                                                    className="h-4 w-4 shrink-0"
                                                                 />
                                                             ) : (
                                                                 <Folder
                                                                     aria-hidden="true"
-                                                                    className="h-3.5 w-3.5 shrink-0"
+                                                                    className="h-4 w-4 shrink-0"
                                                                 />
                                                             )}
                                                             <span className="min-w-0 flex-1 truncate">
@@ -459,7 +458,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                         >
                             <button
                                 onClick={() => setHistoryCollapsed((v) => !v)}
-                                className={`mb-2 flex w-full items-center justify-between px-5 text-xs font-semibold text-gray-500 transition-colors hover:text-gray-700 ${
+                                className={`mb-2 flex w-full items-center justify-between px-4 text-[13px] font-semibold text-gray-500 transition-colors hover:text-gray-700 ${
                                     shouldAnimate ? "sidebar-fade-in" : ""
                                 }`}
                             >
@@ -566,7 +565,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                                 )}
                                 title={!isOpen ? user.email : undefined}
                             >
-                                <div className="h-6.5 w-6.5 flex-shrink-0 rounded-full bg-gray-700 flex items-center justify-center text-white text-sm font-medium font-serif">
+                                <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gray-700 flex items-center justify-center text-white text-sm font-medium font-serif">
                                     {getUserInitials(user.email)}
                                 </div>
                                 {isOpen && (
@@ -578,10 +577,10 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                                         }`}
                                     >
                                         <div className="flex flex-col gap-0.5 min-w-0">
-                                            <div className="text-sm font-medium text-gray-900 leading-none">
+                                            <div className="text-[15px] font-medium text-gray-900 leading-none">
                                                 {getDisplayName()}
                                             </div>
-                                            <div className="text-[12px] text-gray-500 leading-none">
+                                            <div className="text-[13px] text-gray-500 leading-none">
                                                 {getUserTier()}
                                             </div>
                                         </div>
