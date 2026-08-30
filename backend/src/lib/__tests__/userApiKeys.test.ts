@@ -149,4 +149,72 @@ describe("user API key precedence", () => {
         delete process.env.OPENAI_API_KEY;
         delete process.env.USER_API_KEYS_ENCRYPTION_SECRET;
     });
+
+    it("decrypts keys stored under the pre-rebrand salt and re-encrypts them", async () => {
+        process.env.USER_API_KEYS_ENCRYPTION_SECRET = "test-secret";
+        const crypto = await import("crypto");
+        const legacyKey = crypto.scryptSync(
+            "test-secret",
+            "mike-user-api-keys-v1",
+            32,
+        );
+        const iv = crypto.randomBytes(12);
+        const cipher = crypto.createCipheriv("aes-256-gcm", legacyKey, iv);
+        const encrypted = Buffer.concat([
+            cipher.update("legacy-moonshot-key", "utf8"),
+            cipher.final(),
+        ]);
+        const legacyRow = {
+            provider: "moonshot",
+            encrypted_key: encrypted.toString("base64"),
+            iv: iv.toString("base64"),
+            auth_tag: cipher.getAuthTag().toString("base64"),
+        };
+
+        let upgradedRow: Record<string, unknown> | null = null;
+        const db = {
+            from: () => ({
+                select: () => ({
+                    eq: async () => ({ data: [legacyRow], error: null }),
+                }),
+                update: (row: Record<string, unknown>) => ({
+                    eq: () => ({
+                        eq: async () => {
+                            upgradedRow = row;
+                            return { error: null };
+                        },
+                    }),
+                }),
+            }),
+        };
+
+        await expect(
+            getUserApiKeys("user-1", db as never),
+        ).resolves.toMatchObject({ moonshot: "legacy-moonshot-key" });
+
+        expect(upgradedRow).not.toBeNull();
+        const upgraded = upgradedRow as unknown as {
+            encrypted_key: string;
+            iv: string;
+            auth_tag: string;
+        };
+        const currentKey = crypto.scryptSync(
+            "test-secret",
+            "zane-user-api-keys-v1",
+            32,
+        );
+        const decipher = crypto.createDecipheriv(
+            "aes-256-gcm",
+            currentKey,
+            Buffer.from(upgraded.iv, "base64"),
+        );
+        decipher.setAuthTag(Buffer.from(upgraded.auth_tag, "base64"));
+        const roundTripped = Buffer.concat([
+            decipher.update(Buffer.from(upgraded.encrypted_key, "base64")),
+            decipher.final(),
+        ]).toString("utf8");
+        expect(roundTripped).toBe("legacy-moonshot-key");
+
+        delete process.env.USER_API_KEYS_ENCRYPTION_SECRET;
+    });
 });

@@ -59,7 +59,7 @@ export function AddUserInput({
 
             const user = await lookupUserByEmail(email);
             if (!user.exists) {
-                setError(`${email} does not belong to a zane user.`);
+                setError(`${email} does not belong to a Zane user.`);
                 return;
             }
 

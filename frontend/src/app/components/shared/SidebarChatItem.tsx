@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MoreHorizontal, Pencil, Trash2, Check, X } from "lucide-react";
+import {
+    MoreHorizontal,
+    Pencil,
+    Trash2,
+    Check,
+    X,
+    MessageSquare,
+} from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -14,7 +21,6 @@ import { useChatHistoryContext } from "@/app/contexts/ChatHistoryContext";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { OwnerOnlyPopup } from "@/app/components/popups/OwnerOnlyPopup";
 import type { Chat } from "@/app/components/shared/types";
-import { ChatSkeuoIcon } from "@/app/components/shared/AppSidebarSkeuoIcons";
 import { cn } from "@/app/lib/utils";
 import {
     LIQUID_GLASS_SELECTED_CLASS,
@@ -92,7 +98,10 @@ export function SidebarChatItem({ chat, isActive, onSelect, projectName }: Props
                 </div>
             ) : (
                 <>
-                    <ChatSkeuoIcon className="ml-2.5 h-3.5 w-3.5 shrink-0" />
+                    <MessageSquare
+                        aria-hidden="true"
+                        className="ml-2.5 h-3.5 w-3.5 shrink-0 text-gray-500"
+                    />
                     <button
                         onClick={onSelect}
                         onMouseEnter={(e) => {

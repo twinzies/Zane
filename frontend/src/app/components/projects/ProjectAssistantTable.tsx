@@ -24,7 +24,7 @@ import {
 } from "@/app/components/shared/TablePrimitive";
 import { EmptyState } from "@/app/components/ui/empty-state";
 import { PillButton } from "@/app/components/ui/pill-button";
-import { ChatSkeuoIcon } from "@/app/components/shared/AppSidebarSkeuoIcons";
+import { MessageSquare } from "lucide-react";
 import type { Chat } from "@/app/components/shared/types";
 import { formatDate } from "./ProjectPageParts";
 
@@ -226,7 +226,7 @@ export function ProjectAssistantTable({
             ) : chats.length === 0 ? (
                 <TableEmptyState>
                     <EmptyState
-                        icon={<ChatSkeuoIcon />}
+                        icon={<MessageSquare className="text-gray-400" />}
                         title="Assistant"
                         description="Ask questions and get answers grounded in the documents in this project."
                         action={

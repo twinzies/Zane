@@ -17,6 +17,7 @@ import {
   Pencil,
   Play,
   Plus,
+  Table2,
   Trash2,
   Upload,
   Users,
@@ -57,7 +58,6 @@ import {
   LIQUID_TABLE_SURFACE_CLASS,
 } from "@/app/components/ui/liquid-surface";
 import { NewWorkflowModal } from "@/app/components/workflows/NewWorkflowModal";
-import { TabularReviewSkeuoIcon } from "@/app/components/shared/AppSidebarSkeuoIcons";
 import {
   TABLE_CHECKBOX_CLASS,
   SkeletonCheckbox,
@@ -782,7 +782,7 @@ export function WorkflowDetailPage({ id, workflowType }: Props) {
               {visibleColumns.length === 0 ? (
                 <TableEmptyState>
                   <EmptyState
-                    icon={<TabularReviewSkeuoIcon />}
+                    icon={<Table2 className="text-gray-400" />}
                     title="Columns"
                     description="Add columns to define what this tabular review workflow extracts from each document."
                     action={

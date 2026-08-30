@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Upload } from "lucide-react";
+import { Upload, MessageSquare, Table2 } from "lucide-react";
 import { createWorkflow, updateWorkflow } from "@/app/lib/zaneApi";
 import { userFacingApiError } from "@/app/lib/userFacingError";
 import type { Workflow } from "../shared/types";
@@ -11,10 +11,6 @@ import { ModalSegmentedToggle } from "../modals/ModalSegmentedToggle";
 import { ModalSelect } from "../modals/ModalSelect";
 import { FieldLabel, FormTextInput } from "../ui/form-field";
 import { WorkflowSlashCommandUI } from "@/shared/ui/WorkflowSlashCommandUI";
-import {
-    ChatSkeuoIcon,
-    TabularReviewSkeuoIcon,
-} from "../shared/AppSidebarSkeuoIcons";
 import {
     COUNTRY_OPTIONS,
     OTHER_JURISDICTION_OPTION,
@@ -494,12 +490,12 @@ export function NewWorkflowModal({
                                     {
                                         value: "assistant",
                                         label: "Assistant",
-                                        icon: ChatSkeuoIcon,
+                                        icon: MessageSquare,
                                     },
                                     {
                                         value: "tabular",
                                         label: "Tabular",
-                                        icon: TabularReviewSkeuoIcon,
+                                        icon: Table2,
                                     },
                                 ]}
                             />

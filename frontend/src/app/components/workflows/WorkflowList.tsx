@@ -2,7 +2,15 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  MessageSquare,
+  Table2,
+  Workflow as WorkflowIcon,
+} from "lucide-react";
 import {
   deleteWorkflow,
   getWorkflowFilterOptions,
@@ -26,11 +34,6 @@ import { EmptyState } from "@/app/components/ui/empty-state";
 import { PillButton } from "@/app/components/ui/pill-button";
 import { TabPillButton } from "@/app/components/ui/tab-pill-button";
 import { LiquidDropdownSurface } from "@/app/components/ui/liquid-dropdown";
-import {
-  ChatSkeuoIcon,
-  TabularReviewSkeuoIcon,
-  WorkflowSkeuoIcon,
-} from "@/app/components/shared/AppSidebarSkeuoIcons";
 import { workflowDetailPath } from "./workflowRoutes";
 import { ConfirmPopup } from "../popups/ConfirmPopup";
 import { WorkflowAddonPreviewModal } from "./WorkflowAddonPreviewModal";
@@ -865,7 +868,7 @@ function WorkflowTable({
       ) : workflows.length === 0 ? (
         <TableEmptyState>
           <EmptyState
-            icon={<WorkflowSkeuoIcon />}
+            icon={<WorkflowIcon className="text-gray-400" />}
             title="Workflows"
             description={
               error || "Create a reusable workflow or import one from Add-ons."
@@ -885,7 +888,7 @@ function WorkflowTable({
       ) : displayedWorkflows.length === 0 ? (
         <TableEmptyState>
           <EmptyState
-            icon={<WorkflowSkeuoIcon />}
+            icon={<WorkflowIcon className="text-gray-400" />}
             title="No matching workflows"
             description="Adjust the table filters to see more workflows."
           />
@@ -896,8 +899,8 @@ function WorkflowTable({
             {displayedWorkflows.map((workflow) => {
             const Icon =
               workflow.metadata.type === "tabular"
-                ? TabularReviewSkeuoIcon
-                : ChatSkeuoIcon;
+                ? Table2
+                : MessageSquare;
             const canManage = workflow.is_owner !== false;
             const canDelete = canManage;
             const isSelected = selectedIds.includes(workflow.id);
@@ -937,7 +940,7 @@ function WorkflowTable({
                 />
                 <TableCell className="ml-auto w-28">
                   <span className="inline-flex items-center gap-1.5 text-xs text-gray-600">
-                    <Icon className="h-3 w-3 shrink-0" />
+                    <Icon className="h-3 w-3 shrink-0 text-gray-500" />
                     {workflow.metadata.type === "tabular"
                       ? "Tabular"
                       : "Assistant"}
@@ -1081,7 +1084,7 @@ function AddonTable({
 
   function renderAddonRow(addon: WorkflowAddon, nested = false) {
     const Icon =
-      addon.type === "tabular" ? TabularReviewSkeuoIcon : ChatSkeuoIcon;
+      addon.type === "tabular" ? Table2 : MessageSquare;
     return (
       <TableRow
         key={addon.id}
@@ -1096,7 +1099,7 @@ function AddonTable({
         />
         <TableCell className="ml-auto w-28">
           <span className="inline-flex items-center gap-1.5 text-xs text-gray-600">
-            <Icon className="h-3 w-3 shrink-0" />
+            <Icon className="h-3 w-3 shrink-0 text-gray-500" />
             {addon.type === "tabular" ? "Tabular" : "Assistant"}
           </span>
         </TableCell>
@@ -1187,7 +1190,7 @@ function AddonTable({
       ) : isEmpty ? (
         <TableEmptyState>
           <EmptyState
-            icon={<WorkflowSkeuoIcon />}
+            icon={<WorkflowIcon className="text-gray-400" />}
             title="Add-ons"
             description={
               error ||

@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import quickActionsIcon from "@icons/features/quick-actions.svg";
+import { Zap } from "lucide-react";
 import { getUserProfile } from "../../api/zaneApi";
 import { ZaneIcon } from "../../../shared/chat/zane-icon";
 import type { QuickAction } from "../../types";
@@ -91,13 +91,7 @@ export function InitialView({
       </div>
       <div className="flex h-5 items-center justify-center">
         <span className="flex items-center gap-1.5 text-xs font-medium text-gray-800">
-          <img
-            src={quickActionsIcon}
-            alt=""
-            aria-hidden="true"
-            draggable={false}
-            className="h-3.5 w-3.5 shrink-0 object-contain"
-          />
+          <Zap aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
           Quick actions
         </span>
       </div>

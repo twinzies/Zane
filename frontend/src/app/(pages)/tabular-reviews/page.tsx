@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDebouncedValue } from "@/app/hooks/useDebouncedValue";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2, Table2 } from "lucide-react";
 import {
     RowActionMenuItems,
     RowActions,
@@ -43,7 +43,6 @@ import {
 } from "@/app/components/shared/TablePrimitive";
 import { PillButton } from "@/app/components/ui/pill-button";
 import { TabPillButton } from "@/app/components/ui/tab-pill-button";
-import { TabularReviewSkeuoIcon } from "@/app/components/shared/AppSidebarSkeuoIcons";
 import { LiquidDropdownSurface } from "@/app/components/ui/liquid-dropdown";
 import {
     type TabularReviewScope,
@@ -576,7 +575,7 @@ export default function TabularReviewsPage() {
                         !projectFilter &&
                         !debouncedSearch ? (
                             <>
-                                <TabularReviewSkeuoIcon className="mb-4 h-8 w-8" />
+                                <Table2 aria-hidden="true" className="mb-4 h-8 w-8 text-gray-400" />
                                 <p className="text-2xl font-medium font-serif text-gray-900">
                                     Tabular Reviews
                                 </p>

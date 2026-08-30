@@ -14,12 +14,12 @@ export function WordAddinLogo({
 }: WordAddinLogoProps): React.ReactElement {
   const large = size === "lg";
   return (
-    <div className={cn("flex items-center gap-1.5", className)}>
+    <div className={cn("flex items-center gap-2.5", className)}>
       <ZaneIcon size={large ? 30 : 22} />
       <span
         className={cn(
-          "font-serif font-light text-foreground",
-          large ? "text-4xl" : "text-2xl"
+          "font-script text-foreground",
+          large ? "text-5xl" : "text-3xl"
         )}
       >
         zane

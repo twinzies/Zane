@@ -76,7 +76,7 @@ function ProfileDetailsForm({
         <OnboardingShell
             step="Step 1 of 2"
             title="Tell us about you"
-            description="Add the details we should use across zane."
+            description="Add the details we should use across Zane."
         >
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>

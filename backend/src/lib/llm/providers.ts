@@ -192,7 +192,7 @@ async function createRouterAdapter(
 
 function unsupportedOpenCodeGoModel(model: string): Error {
   return new Error(
-    `OpenCode Go model ${openCodeGoModelId(model)} requires a protocol zane does not support yet. Select a model listed in Settings → Bring Your Own Keys → Routers.`,
+    `OpenCode Go model ${openCodeGoModelId(model)} requires a protocol Zane does not support yet. Select a model listed in Settings → Bring Your Own Keys → Routers.`,
   );
 }
 

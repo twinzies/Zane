@@ -13,7 +13,13 @@ import {
     useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { Loader2, AlertCircle, ChevronDown, ChevronRight } from "lucide-react";
+import {
+    Loader2,
+    AlertCircle,
+    ChevronDown,
+    ChevronRight,
+    LibraryBig,
+} from "lucide-react";
 import {
     deleteDocument,
     getDocumentUrl,
@@ -80,7 +86,6 @@ import {
 } from "@/app/components/projects/ProjectPageParts";
 import { DocumentSidePanel } from "@/app/components/shared/DocumentSidePanel";
 import { TableLoadMoreRow } from "@/app/components/shared/TableLoadMoreRow";
-import { LibrarySkeuoIcon } from "@/app/components/shared/AppSidebarSkeuoIcons";
 import { EmptyState } from "@/app/components/ui/empty-state";
 import { PillButton } from "@/app/components/ui/pill-button";
 import {
@@ -3099,7 +3104,7 @@ export function DocTable({
                                     >
                                         <TableEmptyState>
                                             <EmptyState
-                                                icon={<LibrarySkeuoIcon />}
+                                                icon={<LibraryBig className="text-gray-400" />}
                                                 title={emptyStateTitle}
                                                 description="Upload documents or drop files and folders here"
                                                 action={

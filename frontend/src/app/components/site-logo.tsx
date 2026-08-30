@@ -7,6 +7,8 @@ interface SiteLogoProps {
     iconClassName?: string;
     animate?: boolean;
     asLink?: boolean;
+    href?: string;
+    as?: "h1" | "div";
 }
 
 export function SiteLogo({
@@ -15,16 +17,19 @@ export function SiteLogo({
     iconClassName = "",
     animate = false,
     asLink = false,
+    href,
+    as: Wrapper = "h1",
 }: SiteLogoProps) {
     const landingHref =
         process.env.NODE_ENV === "production"
             ? "https://zaneoss.com"
             : "http://localhost:3000";
+    const linkHref = href ?? (asLink ? landingHref : undefined);
     const sizeClasses = {
-        sm: "text-xl",
-        md: "text-2xl",
-        lg: "text-4xl",
-        xl: "text-6xl",
+        sm: "text-2xl",
+        md: "text-3xl",
+        lg: "text-5xl",
+        xl: "text-7xl",
     };
 
     const iconSizes = {
@@ -35,8 +40,8 @@ export function SiteLogo({
     };
 
     const logo = (
-        <h1
-            className={`flex items-center gap-1.5 ${sizeClasses[size]} font-light font-serif ${
+        <Wrapper
+            className={`flex items-center gap-2.5 ${sizeClasses[size]} ${
                 animate ? "sidebar-fade-in" : ""
             } ${className}`}
         >
@@ -45,14 +50,14 @@ export function SiteLogo({
             >
                 <ZaneIcon size={iconSizes[size]} />
             </span>
-            <span>zane</span>
-        </h1>
+            <span className="font-script">zane</span>
+        </Wrapper>
     );
 
-    if (asLink) {
+    if (linkHref) {
         return (
             <Link
-                href={landingHref}
+                href={linkHref}
                 className="cursor-pointer hover:opacity-80 transition-opacity"
             >
                 {logo}

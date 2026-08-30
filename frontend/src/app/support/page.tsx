@@ -44,7 +44,7 @@ export default function SupportPage() {
         {
             value: "question",
             label: "Question",
-            description: "Ask a question about using zane",
+            description: "Ask a question about using Zane",
         },
         {
             value: "other",
@@ -116,7 +116,7 @@ export default function SupportPage() {
                 {/* Fixed Header Section */}
                 <div className="flex-shrink-0 pt-6 md:pt-10 pb-0">
                     <div className="mb-5">
-                        <h1 className="text-4xl font-medium font-eb-garamond text-gray-900 mb-3">
+                        <h1 className="text-4xl font-medium font-serif text-gray-900 mb-3">
                             Support
                         </h1>
                     </div>

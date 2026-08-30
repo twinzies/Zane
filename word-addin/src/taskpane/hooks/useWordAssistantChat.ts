@@ -217,7 +217,7 @@ export function useWordAssistantChat({
           console.error("Failed to read the current Word document", error);
           if (requestIsCurrent()) {
             setRequestError(
-              "zane couldn't read the current Word document. Please try again.",
+              "Zane couldn't read the current Word document. Please try again.",
             );
           }
           return;

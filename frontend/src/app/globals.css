@@ -15,6 +15,7 @@
     --color-app-floating: var(--app-floating);
     --font-sans: var(--font-inter);
     --font-serif: var(--font-eb-garamond);
+    --font-script: var(--font-italiana);
     --color-blue: rgb(0, 136, 255);
     --color-blue-50: rgba(0, 136, 255, 0.05);
     --color-blue-100: rgba(0, 136, 255, 0.1);
@@ -261,10 +262,6 @@
 }
 
 @layer utilities {
-    .font-eb-garamond {
-        font-family: var(--font-eb-garamond);
-    }
-
     .sidebar-fade-in {
         animation: sidebarFadeIn 0.3s ease-out forwards;
         animation-delay: 0.1s;

@@ -8,7 +8,7 @@ import {
   type CSSProperties,
 } from "react";
 import Link from "next/link";
-import { CalendarDays, Download, Loader2 } from "lucide-react";
+import { CalendarDays, Download, Loader2, History } from "lucide-react";
 import { DayPicker, type Matcher } from "@daypicker/react";
 import dayPickerStyles from "@daypicker/react/style.module.css";
 import {
@@ -32,7 +32,6 @@ import {
   TableStickyCell,
 } from "@/app/components/shared/TablePrimitive";
 import { TableToolbar } from "@/app/components/shared/TableToolbar";
-import { HistorySkeuoIcon } from "@/app/components/shared/HistorySkeuoIcon";
 import { PillButton } from "@/app/components/ui/pill-button";
 import { TabPillButton } from "@/app/components/ui/tab-pill-button";
 import {
@@ -424,9 +423,10 @@ export default function HistoryPage() {
         ) : events.length === 0 ? (
           <TableBody className="flex">
             <TableEmptyState>
-              <HistorySkeuoIcon
+              <History
+                aria-hidden="true"
                 data-testid="history-empty-icon"
-                className="mb-4 h-14 w-14"
+                className="mb-4 h-14 w-14 text-gray-400"
               />
               <p className="font-serif text-2xl font-medium text-gray-900">
                 No history yet

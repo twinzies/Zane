@@ -513,7 +513,7 @@ export function AddColumnModal({ open, existingCount, onClose, onAdd, editingCol
                                             prompt: e.target.value,
                                         })
                                     }
-                                    placeholder="Write the analysis prompt — describe what zane should extract from each document for this column…"
+                                    placeholder="Write the analysis prompt — describe what Zane should extract from each document for this column…"
                                     className="mt-2 min-h-36"
                                 />
                                                 </>

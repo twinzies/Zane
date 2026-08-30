@@ -8,25 +8,27 @@ import {
     useRef,
     type UIEvent,
 } from "react";
-import { PanelLeft, ChevronsUpDown, ChevronDown, Loader2 } from "lucide-react";
+import {
+    PanelLeft,
+    ChevronsUpDown,
+    ChevronDown,
+    Loader2,
+    MessageSquare,
+    Folder,
+    FolderOpen,
+    LibraryBig,
+    Table2,
+    Workflow,
+    History,
+    Settings,
+    LogOut,
+} from "lucide-react";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useUserProfile } from "@/app/contexts/UserProfileContext";
 import { useChatHistoryContext } from "@/app/contexts/ChatHistoryContext";
 import { useRouter, usePathname } from "next/navigation";
-import Link from "next/link";
-import { ZaneIcon } from "@/app/components/chat/zane-icon";
+import { SiteLogo } from "@/app/components/site-logo";
 import { SidebarChatItem } from "@/app/components/shared/SidebarChatItem";
-import {
-    ChatSkeuoIcon,
-    FolderSkeuoIcon,
-    LibrarySkeuoIcon,
-    TabularReviewSkeuoIcon,
-    WorkflowSkeuoIcon,
-    SettingsSkeuoIcon,
-    SignOutSkeuoIcon,
-} from "@/app/components/shared/AppSidebarSkeuoIcons";
-import { HistorySkeuoIcon } from "@/app/components/shared/HistorySkeuoIcon";
-import { ProjectSvgIcon } from "@/app/components/shared/FolderSvgIcon";
 import { listProjectSummaries } from "@/app/lib/zaneApi";
 import type { Project } from "@/app/components/shared/types";
 import { cn } from "@/app/lib/utils";
@@ -37,15 +39,15 @@ import {
 } from "@/app/components/ui/liquid-surface";
 
 const NAV_ITEMS = [
-    { href: "/assistant", label: "Assistant", icon: ChatSkeuoIcon },
-    { href: "/projects", label: "Projects", icon: FolderSkeuoIcon },
-    { href: "/library", label: "Library", icon: LibrarySkeuoIcon },
+    { href: "/assistant", label: "Assistant", icon: MessageSquare },
+    { href: "/projects", label: "Projects", icon: Folder },
+    { href: "/library", label: "Library", icon: LibraryBig },
     {
         href: "/tabular-reviews",
         label: "Tabular Review",
-        icon: TabularReviewSkeuoIcon,
+        icon: Table2,
     },
-    { href: "/workflows", label: "Workflows", icon: WorkflowSkeuoIcon },
+    { href: "/workflows", label: "Workflows", icon: Workflow },
 ];
 
 const RECENT_PROJECT_PAGE_SIZE = 10;
@@ -269,19 +271,12 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                 >
                     {isOpen && (
                         <div className="px-2">
-                            <Link
+                            <SiteLogo
+                                size="md"
+                                as="div"
                                 href="/assistant"
-                                className="flex items-center gap-1.5 hover:opacity-80 transition-opacity"
-                            >
-                                <ZaneIcon size={22} />
-                                <span
-                                    className={`text-2xl font-light font-serif ${
-                                        shouldAnimate ? "sidebar-fade-in" : ""
-                                    }`}
-                                >
-                                    zane
-                                </span>
-                            </Link>
+                                animate={shouldAnimate}
+                            />
                         </div>
                     )}
                     <button
@@ -320,10 +315,11 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                                 )}
                             >
                                 <Icon
+                                    aria-hidden="true"
                                     className={`h-4 w-4 flex-shrink-0 ${
                                         isActive
                                             ? "text-gray-900"
-                                            : "text-black"
+                                            : "text-gray-700"
                                     }`}
                                 />
                                 {isOpen && (
@@ -425,10 +421,17 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                                                                     : `text-gray-700 ${LIQUID_GLASS_HOVER_CLASS}`,
                                                             )}
                                                         >
-                                                            <ProjectSvgIcon
-                                                                open={isActive}
-                                                                className="h-3.5 w-3.5 shrink-0"
-                                                            />
+                                                            {isActive ? (
+                                                                <FolderOpen
+                                                                    aria-hidden="true"
+                                                                    className="h-3.5 w-3.5 shrink-0"
+                                                                />
+                                                            ) : (
+                                                                <Folder
+                                                                    aria-hidden="true"
+                                                                    className="h-3.5 w-3.5 shrink-0"
+                                                                />
+                                                            )}
                                                             <span className="min-w-0 flex-1 truncate">
                                                                 {project.name}
                                                             </span>
@@ -607,7 +610,10 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                                                 LIQUID_GLASS_SELECTED_CLASS,
                                         )}
                                     >
-                                        <HistorySkeuoIcon className="h-4 w-4" />
+                                        <History
+                                            className="h-4 w-4"
+                                            aria-hidden="true"
+                                        />
                                         History
                                     </button>
                                     <button
@@ -620,7 +626,10 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                                             LIQUID_GLASS_HOVER_CLASS,
                                         )}
                                     >
-                                        <SettingsSkeuoIcon className="h-4 w-4" />
+                                        <Settings
+                                            className="h-4 w-4"
+                                            aria-hidden="true"
+                                        />
                                         Settings
                                     </button>
                                     <button
@@ -639,7 +648,10 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                                             LIQUID_GLASS_HOVER_CLASS,
                                         )}
                                     >
-                                        <SignOutSkeuoIcon className="h-4 w-4" />
+                                        <LogOut
+                                            className="h-4 w-4"
+                                            aria-hidden="true"
+                                        />
                                         Sign out
                                     </button>
                                 </div>

@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import Image from "next/image";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Zap } from "lucide-react";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useUserProfile } from "@/app/contexts/UserProfileContext";
 import { ZaneIcon } from "@/app/components/chat/zane-icon";
@@ -232,12 +231,7 @@ export function InitialView({ onSubmit }: InitialViewProps) {
                     <div className="flex flex-col items-center">
                         <div className="group relative flex h-5 items-center justify-center">
                             <span className="flex items-center gap-1.5 text-xs font-medium text-gray-800">
-                                <Image
-                                    src="/icons/features/quick-actions.svg"
-                                    alt=""
-                                    width={14}
-                                    height={14}
-                                    unoptimized
+                                <Zap
                                     aria-hidden="true"
                                     className="h-3.5 w-3.5 shrink-0"
                                 />
