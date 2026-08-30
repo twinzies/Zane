@@ -6,6 +6,8 @@
 # demo values — fine for localhost, NOT for anything exposed. The keys are JWTs
 # signed with the secret; don't change one without regenerating the others.
 
+name: zane
+
 services:
   # --- Supabase: Postgres (ships base roles, the `auth` schema, auth.uid, etc.)
   db:

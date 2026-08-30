@@ -584,7 +584,7 @@ export function ProjectsOverview() {
                             <EmptyState
                                 icon={<OpenProjectSvgIcon />}
                                 title="Projects"
-                                description="Upload documents into projects and to commence chats and tabular reviews with them."
+                                description="Create a project to organize chats, files, and context for ongoing legal work."
                                 action={
                                     <PillButton
                                         tone="black"
