@@ -1678,6 +1678,22 @@ export async function updateTabularReview(
     });
 }
 
+/**
+ * Removes rows by id, including the tombstones left behind by deleted
+ * documents. Row-scoped so that removing one document leaves every other row's
+ * generated cells untouched.
+ */
+export async function deleteTabularReviewRows(
+    reviewId: string,
+    rowIds: string[],
+): Promise<void> {
+    await apiRequest(`/tabular-review/${reviewId}/rows`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ row_ids: rowIds }),
+    });
+}
+
 export async function getTabularReviewPeople(
     reviewId: string,
 ): Promise<ProjectPeople> {

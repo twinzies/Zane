@@ -820,6 +820,14 @@ export interface TabularCell {
     created_at: string;
 }
 
+export interface TabularReviewRowSource {
+    /** Null once the underlying document has been deleted. */
+    document_id: string | null;
+    /** Snapshot taken when the row was built; survives the document. */
+    filename: string;
+    deleted: boolean;
+}
+
 export interface TabularReviewRow {
     id: string;
     review_id: string;
@@ -829,7 +837,12 @@ export interface TabularReviewRow {
     library_folder_id: string | null;
     document_id: string | null;
     sort_index: number;
+    /** Surviving source document ids only. Deleted sources are omitted. */
     source_document_ids: string[];
+    /** Every source the row was built from, including deleted ones. */
+    source_documents?: TabularReviewRowSource[];
+    /** True once no source document survives — the row is a tombstone. */
+    is_deleted?: boolean;
 }
 
 // Workflows

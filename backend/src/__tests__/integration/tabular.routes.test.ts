@@ -35,6 +35,7 @@ let supabaseState: {
     tables: Record<string, QueryResult>;
     inserts: { table: string; payload: unknown }[];
     updates: { table: string; payload: unknown }[];
+    deletes: { table: string; filters: { method: string; args: unknown[] }[] }[];
 };
 
 function resetSupabaseState() {
@@ -45,6 +46,7 @@ function resetSupabaseState() {
         tables: {},
         inserts: [],
         updates: [],
+        deletes: [],
     };
 }
 resetSupabaseState();
@@ -89,6 +91,20 @@ function makeQuery(table: string) {
     "contains",
     ];
     for (const m of chain) q[m] = vi.fn(() => q);
+    // Deletes are recorded with the filters applied after them, so tests can
+    // assert which rows a route actually removed.
+    let pendingDelete: { method: string; args: unknown[] }[] | null = null;
+    q.delete = vi.fn(() => {
+        pendingDelete = [];
+        supabaseState.deletes.push({ table, filters: pendingDelete });
+        return q;
+    });
+    for (const m of ["eq", "in", "neq", "is"]) {
+        q[m] = vi.fn((...args: unknown[]) => {
+            pendingDelete?.push({ method: m, args });
+            return q;
+        });
+    }
     q.insert = vi.fn((payload: unknown) => {
         supabaseState.inserts.push({ table, payload });
         return q;
@@ -412,9 +428,24 @@ describe("tabular.routes", () => {
           (i) => i.table === "tabular_review_row_sources",
         )?.payload,
       ).toEqual([
-                    { row_id: "row-folder", document_id: "d1", sort_index: 0 },
-                    { row_id: "row-folder", document_id: "d2", sort_index: 1 },
-                    { row_id: "row-document", document_id: "d3", sort_index: 0 },
+                    {
+                        row_id: "row-folder",
+                        document_id: "d1",
+                        document_filename: "A.pdf",
+                        sort_index: 0,
+                    },
+                    {
+                        row_id: "row-folder",
+                        document_id: "d2",
+                        document_filename: "B.pdf",
+                        sort_index: 1,
+                    },
+                    {
+                        row_id: "row-document",
+                        document_id: "d3",
+                        document_filename: "Loose.pdf",
+                        sort_index: 0,
+                    },
                 ]);
       expect(
         supabaseState.inserts.find((i) => i.table === "tabular_cells")?.payload,
@@ -523,11 +554,13 @@ describe("tabular.routes", () => {
                 {
                     row_id: "row-library-folder",
                     document_id: "d1",
+                    document_filename: "A.pdf",
                     sort_index: 0,
                 },
                 {
                     row_id: "row-library-folder",
                     document_id: "d2",
+                    document_filename: "B.pdf",
                     sort_index: 1,
                 },
             ]);
@@ -642,6 +675,105 @@ describe("tabular.routes", () => {
             expect(res.body.documents).toEqual([
                 { id: "d1", current_version_id: null },
             ]);
+        });
+
+        it("marks a row deleted and keeps its cells when the document is gone", async () => {
+            supabaseState.tables.tabular_reviews = {
+                data: {
+                    id: "r1",
+                    user_id: "u1",
+                    project_id: null,
+                    document_ids: ["d1", "d2"],
+                    columns_config: [],
+                },
+                error: null,
+            };
+            // The generated cell survives now that document_id clears rather
+            // than cascades.
+            supabaseState.tables.tabular_cells = {
+                data: [
+                    {
+                        id: "c1",
+                        row_id: "row-deleted",
+                        document_id: null,
+                        column_index: 0,
+                        content: JSON.stringify({ summary: "kept" }),
+                        status: "done",
+                    },
+                ],
+                error: null,
+            };
+            supabaseState.tables.tabular_review_rows = {
+                data: [
+                    {
+                        id: "row-deleted",
+                        review_id: "r1",
+                        label: "Gone.pdf",
+                        row_type: "document",
+                        folder_id: null,
+                        library_folder_id: null,
+                        document_id: null,
+                        sort_index: 0,
+                    },
+                    {
+                        id: "row-live",
+                        review_id: "r1",
+                        label: "Live.pdf",
+                        row_type: "document",
+                        folder_id: null,
+                        library_folder_id: null,
+                        document_id: "d2",
+                        sort_index: 1,
+                    },
+                ],
+                error: null,
+            };
+            supabaseState.tables.tabular_review_row_sources = {
+                data: [
+                    {
+                        row_id: "row-deleted",
+                        document_id: null,
+                        document_filename: "Gone.pdf",
+                    },
+                    {
+                        row_id: "row-live",
+                        document_id: "d2",
+                        document_filename: "Live.pdf",
+                    },
+                ],
+                error: null,
+            };
+            supabaseState.tables.documents = {
+                data: [{ id: "d2", current_version_id: null }],
+                error: null,
+            };
+
+            const res = await request(app)
+                .get("/tabular-review/r1")
+                .set(...AUTH);
+
+            expect(res.status).toBe(200);
+            const deletedRow = res.body.rows.find(
+                (row: { id: string }) => row.id === "row-deleted",
+            );
+            expect(deletedRow).toMatchObject({
+                label: "Gone.pdf",
+                is_deleted: true,
+                source_document_ids: [],
+            });
+            expect(deletedRow.source_documents).toEqual([
+                { document_id: null, filename: "Gone.pdf", deleted: true },
+            ]);
+            const liveRow = res.body.rows.find(
+                (row: { id: string }) => row.id === "row-live",
+            );
+            expect(liveRow).toMatchObject({
+                is_deleted: false,
+                source_document_ids: ["d2"],
+            });
+            // The point of the change: previously generated content is intact.
+            expect(res.body.cells).toHaveLength(1);
+            expect(res.body.cells[0].content).toMatchObject({ summary: "kept" });
         });
     });
 
@@ -827,6 +959,287 @@ describe("tabular.routes", () => {
                 "begin_tabular_review_generation",
                 "finish_tabular_review_generation",
             ]);
+        });
+
+        it("reconciles rows instead of rebuilding, keeping tombstones and cells", async () => {
+            supabaseState.tables.tabular_reviews = {
+                data: {
+                    id: "r1",
+                    user_id: "u1",
+                    project_id: null,
+                    document_ids: ["d1", "d2"],
+                    columns_config: [{ index: 0, name: "C", prompt: "p" }],
+                    document_grouping: "document",
+                },
+                error: null,
+            };
+            supabaseState.tables.tabular_review_rows = {
+                data: [
+                    {
+                        id: "row-deleted",
+                        review_id: "r1",
+                        label: "Gone.pdf",
+                        row_type: "document",
+                        folder_id: null,
+                        library_folder_id: null,
+                        document_id: null,
+                        sort_index: 0,
+                    },
+                    {
+                        id: "row-live",
+                        review_id: "r1",
+                        label: "Live.pdf",
+                        row_type: "document",
+                        folder_id: null,
+                        library_folder_id: null,
+                        document_id: "d2",
+                        sort_index: 1,
+                    },
+                ],
+                error: null,
+            };
+            supabaseState.tables.tabular_review_row_sources = {
+                data: [
+                    {
+                        row_id: "row-deleted",
+                        document_id: null,
+                        document_filename: "Gone.pdf",
+                    },
+                    {
+                        row_id: "row-live",
+                        document_id: "d2",
+                        document_filename: "Live.pdf",
+                    },
+                ],
+                error: null,
+            };
+            supabaseState.tables.documents = {
+                data: [{ id: "d2", current_version_id: "v2" }],
+                error: null,
+            };
+
+            const res = await request(app)
+                .patch("/tabular-review/r1")
+                .set(...AUTH)
+                .send({ document_ids: ["d2"] });
+
+            expect(res.status).toBe(200);
+            // The old rebuild deleted every row in the review, cascading away
+            // all generated cells. Nothing may be deleted here.
+            expect(
+                supabaseState.deletes.filter(
+                    (entry) => entry.table === "tabular_review_rows",
+                ),
+            ).toEqual([]);
+            // The live row already exists, so no row is recreated either.
+            expect(
+                supabaseState.inserts.filter(
+                    (insert) => insert.table === "tabular_review_rows",
+                ),
+            ).toEqual([]);
+        });
+
+        it("keeps deleted document ids in document_ids when the client omits them", async () => {
+            supabaseState.tables.tabular_reviews = {
+                data: {
+                    id: "r1",
+                    user_id: "u1",
+                    project_id: null,
+                    document_ids: ["d1", "d2"],
+                    columns_config: [],
+                    document_grouping: "document",
+                },
+                error: null,
+            };
+            supabaseState.tables.tabular_review_rows = { data: [], error: null };
+            supabaseState.tables.documents = { data: [], error: null };
+            // d1 has been deleted, so the access filter cannot resolve it.
+            filterAccessibleDocumentIds.mockResolvedValue([]);
+
+            const res = await request(app)
+                .patch("/tabular-review/r1")
+                .set(...AUTH)
+                .send({ document_ids: ["d1"] });
+
+            expect(res.status).toBe(200);
+            expect(
+                supabaseState.updates.find(
+                    (update) => update.table === "tabular_reviews",
+                )?.payload,
+            ).toMatchObject({ document_ids: ["d1"] });
+        });
+    });
+
+    // ── DELETE /tabular-review/:reviewId/rows ─────────────────────────────
+    describe("DELETE /tabular-review/:reviewId/rows", () => {
+        function seedTombstoneReview() {
+            supabaseState.tables.tabular_reviews = {
+                data: {
+                    id: "r1",
+                    user_id: "u1",
+                    project_id: null,
+                    document_ids: ["d1", "d2"],
+                    updated_at: "2026-08-31T10:00:00.000Z",
+                },
+                error: null,
+            };
+            supabaseState.tables.tabular_review_rows = {
+                data: [
+                    {
+                        id: "row-deleted",
+                        review_id: "r1",
+                        label: "Gone.pdf",
+                        row_type: "document",
+                        folder_id: null,
+                        library_folder_id: null,
+                        document_id: null,
+                        sort_index: 0,
+                    },
+                    {
+                        id: "row-live",
+                        review_id: "r1",
+                        label: "Live.pdf",
+                        row_type: "document",
+                        folder_id: null,
+                        library_folder_id: null,
+                        document_id: "d2",
+                        sort_index: 1,
+                    },
+                ],
+                error: null,
+            };
+            supabaseState.tables.tabular_review_row_sources = {
+                data: [
+                    {
+                        row_id: "row-deleted",
+                        document_id: null,
+                        document_filename: "Gone.pdf",
+                    },
+                    {
+                        row_id: "row-live",
+                        document_id: "d2",
+                        document_filename: "Live.pdf",
+                    },
+                ],
+                error: null,
+            };
+            supabaseState.rpc = { data: "started", error: null };
+        }
+
+        it("returns 400 when row_ids is missing", async () => {
+            const res = await request(app)
+                .delete("/tabular-review/r1/rows")
+                .set(...AUTH)
+                .send({});
+
+            expect(res.status).toBe(400);
+            expect(res.body.detail).toBe("row_ids is required");
+        });
+
+        it("returns 404 when review access is denied", async () => {
+            supabaseState.tables.tabular_reviews = {
+                data: { id: "r1", user_id: "other", project_id: null },
+                error: null,
+            };
+            ensureReviewAccess.mockResolvedValue({ ok: false });
+
+            const res = await request(app)
+                .delete("/tabular-review/r1/rows")
+                .set(...AUTH)
+                .send({ row_ids: ["row-live"] });
+
+            expect(res.status).toBe(404);
+            expect(res.body.detail).toBe("Review not found");
+        });
+
+        it("returns 403 for a collaborator who does not own the review", async () => {
+            supabaseState.tables.tabular_reviews = {
+                data: { id: "r1", user_id: "other", project_id: null },
+                error: null,
+            };
+            ensureReviewAccess.mockResolvedValue({ ok: true, isOwner: false });
+
+            const res = await request(app)
+                .delete("/tabular-review/r1/rows")
+                .set(...AUTH)
+                .send({ row_ids: ["row-live"] });
+
+            expect(res.status).toBe(403);
+            expect(res.body.detail).toBe(
+                "Only the review owner can remove documents",
+            );
+        });
+
+        it("rejects removal while generation holds the review lease", async () => {
+            supabaseState.tables.tabular_reviews = {
+                data: {
+                    id: "r1",
+                    user_id: "u1",
+                    project_id: null,
+                    active_generation_id:
+                        "00000000-0000-4000-8000-000000000001",
+                    generation_lease_expires_at: "2099-01-01T00:00:00.000Z",
+                },
+                error: null,
+            };
+
+            const res = await request(app)
+                .delete("/tabular-review/r1/rows")
+                .set(...AUTH)
+                .send({ row_ids: ["row-live"] });
+
+            expect(res.status).toBe(409);
+            expect(res.body.code).toBe("review_running");
+            expect(supabaseState.operations).not.toContain(
+                "from:tabular_review_rows",
+            );
+        });
+
+        it("removes a tombstone row and drops its dead id from document_ids", async () => {
+            seedTombstoneReview();
+            // Only the surviving document still resolves.
+            supabaseState.tables.documents = {
+                data: [{ id: "d2" }],
+                error: null,
+            };
+
+            const res = await request(app)
+                .delete("/tabular-review/r1/rows")
+                .set(...AUTH)
+                .send({ row_ids: ["row-deleted"] });
+
+            expect(res.status).toBe(204);
+            // No tombstone left to explain the dead id, so it goes too.
+            expect(
+                supabaseState.updates.find(
+                    (update) => update.table === "tabular_reviews",
+                )?.payload,
+            ).toEqual({ document_ids: ["d2"] });
+            expect(supabaseState.rpcCalls.map(({ fn }) => fn)).toEqual([
+                "begin_tabular_review_generation",
+                "finish_tabular_review_generation",
+            ]);
+        });
+
+        it("keeps a surviving tombstone's dead id when another row is removed", async () => {
+            seedTombstoneReview();
+            supabaseState.tables.documents = {
+                data: [{ id: "d2" }],
+                error: null,
+            };
+
+            const res = await request(app)
+                .delete("/tabular-review/r1/rows")
+                .set(...AUTH)
+                .send({ row_ids: ["row-live"] });
+
+            expect(res.status).toBe(204);
+            // row-deleted survives, so d1 stays as the record of what it was.
+            expect(
+                supabaseState.updates.find(
+                    (update) => update.table === "tabular_reviews",
+                )?.payload,
+            ).toEqual({ document_ids: ["d1"] });
         });
     });
 

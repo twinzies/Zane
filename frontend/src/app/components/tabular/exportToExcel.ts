@@ -64,7 +64,13 @@ export async function exportTabularReviewToExcel(params: {
     };
 
     for (const reviewRow of rows) {
-        const row: string[] = [reviewRow.label];
+        // Mark tombstones so an exported sheet is not read as referring to
+        // files that still exist.
+        const row: string[] = [
+            reviewRow.is_deleted
+                ? `${reviewRow.label} (deleted)`
+                : reviewRow.label,
+        ];
         for (const col of sortedCols) {
             row.push(
                 formatCellForExport(

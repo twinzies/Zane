@@ -1572,13 +1572,21 @@ create index if not exists idx_tabular_review_rows_review
 
 alter table public.tabular_review_rows enable row level security;
 
+-- document_id is nullable and clears rather than cascades: a review keeps the
+-- record of which documents a row was built from after those documents are
+-- deleted. document_filename is the snapshot taken at row creation, and is the
+-- only surviving copy of the name once the document and its versions are gone.
 create table if not exists public.tabular_review_row_sources (
+  id uuid primary key default gen_random_uuid(),
   row_id uuid not null references public.tabular_review_rows(id) on delete cascade,
-  document_id uuid not null references public.documents(id) on delete cascade,
+  document_id uuid references public.documents(id) on delete set null,
+  document_filename text,
   sort_index integer not null default 0,
-  created_at timestamptz not null default now(),
-  primary key (row_id, document_id)
+  created_at timestamptz not null default now()
 );
+
+create unique index if not exists tabular_review_row_sources_row_document_idx
+  on public.tabular_review_row_sources(row_id, document_id);
 
 create index if not exists idx_tabular_review_row_sources_document
   on public.tabular_review_row_sources(document_id);
@@ -1589,7 +1597,8 @@ create table if not exists public.tabular_cells (
   id uuid primary key default gen_random_uuid(),
   review_id uuid not null references public.tabular_reviews(id) on delete cascade,
   row_id uuid not null references public.tabular_review_rows(id) on delete cascade,
-  document_id uuid references public.documents(id) on delete cascade,
+  -- Clears rather than cascades: generated content outlives its source document.
+  document_id uuid references public.documents(id) on delete set null,
   column_index integer not null,
   content text,
   citations jsonb,

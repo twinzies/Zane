@@ -53,6 +53,25 @@ export function TRFirstColumnCell({
     const rowDocument =
         sourceDocuments.find((document) => document.id === row.document_id) ??
         sourceDocuments[0];
+    const isDeleted = row.is_deleted ?? false;
+    const deletedTitle = `${row.label} — the source file has been deleted. Previously generated results are kept.`;
+    // Surviving documents come from the live fetch; deleted ones only exist as
+    // the snapshot recorded when the row was built.
+    const folderChildren = (
+        row.source_documents ??
+        sourceDocuments.map((document) => ({
+            document_id: document.id,
+            filename: document.filename,
+            deleted: false,
+        }))
+    ).map((source) => ({
+        ...source,
+        document: source.document_id
+            ? sourceDocuments.find(
+                  (candidate) => candidate.id === source.document_id,
+              )
+            : undefined,
+    }));
 
     return (
         <div ref={containerRef} className={`${className} relative`}>
@@ -70,8 +89,18 @@ export function TRFirstColumnCell({
                     className="flex min-w-0 flex-1 items-center text-left"
                     aria-expanded={expanded}
                 >
-                    <ClosedFolderSvgIcon className="mr-2 h-3.5 w-3.5 shrink-0" />
-                    <span className="line-clamp-1" title={row.label}>
+                    <ClosedFolderSvgIcon
+                        className={`mr-2 h-3.5 w-3.5 shrink-0 ${isDeleted ? "grayscale opacity-35" : ""}`}
+                    />
+                    <span
+                        className={`line-clamp-1 ${isDeleted ? "text-gray-300" : ""}`}
+                        title={isDeleted ? deletedTitle : row.label}
+                    >
+                        {isDeleted && (
+                            <span className="font-medium text-gray-500">
+                                [Deleted]{" "}
+                            </span>
+                        )}
                         {row.label}
                     </span>
                 </button>
@@ -82,14 +111,27 @@ export function TRFirstColumnCell({
                         if (rowDocument) onDocumentOpen(rowDocument);
                     }}
                     disabled={!rowDocument}
-                    aria-label={`Open ${row.label}`}
+                    aria-label={
+                        isDeleted
+                            ? `${row.label} (deleted)`
+                            : `Open ${row.label}`
+                    }
                     className="flex min-w-0 flex-1 items-center rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 disabled:cursor-default"
                 >
                     <FileTypeIcon
                         fileType={row.label}
                         className="mr-2 h-3.5 w-3.5"
+                        muted={isDeleted}
                     />
-                    <span className="line-clamp-1" title={row.label}>
+                    <span
+                        className={`line-clamp-1 ${isDeleted ? "text-gray-300" : ""}`}
+                        title={isDeleted ? deletedTitle : row.label}
+                    >
+                        {isDeleted && (
+                            <span className="font-medium text-gray-500">
+                                [Deleted]{" "}
+                            </span>
+                        )}
                         {row.label}
                     </span>
                 </button>
@@ -105,36 +147,59 @@ export function TRFirstColumnCell({
                             </span>
                         </div>
                         <div className="max-h-64 overflow-y-auto">
-                            {sourceDocuments.map((document) => (
-                                <button
-                                    key={document.id}
-                                    type="button"
-                                    onClick={() => {
-                                        setExpanded(false);
-                                        onDocumentOpen(document);
-                                    }}
-                                    className="flex min-h-7 w-full items-center rounded-md py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
-                                    aria-label={`Open ${document.filename}`}
-                                >
-                                    <CornerDownRight
-                                        className="mr-2 h-3.5 w-3.5 shrink-0 text-gray-400"
-                                        aria-hidden="true"
-                                    />
-                                    <FileTypeIcon
-                                        fileType={
-                                            document.file_type ??
-                                            document.filename
+                            {folderChildren.map((child, index) => {
+                                const document = child.document;
+                                return (
+                                    <button
+                                        key={
+                                            child.document_id ??
+                                            `deleted-${index}`
                                         }
-                                        className="mr-2 h-3.5 w-3.5"
-                                    />
-                                    <span
-                                        className="min-w-0 truncate"
-                                        title={document.filename}
+                                        type="button"
+                                        onClick={() => {
+                                            if (!document) return;
+                                            setExpanded(false);
+                                            onDocumentOpen(document);
+                                        }}
+                                        disabled={!document}
+                                        className="flex min-h-7 w-full items-center rounded-md py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 disabled:cursor-default"
+                                        aria-label={
+                                            document
+                                                ? `Open ${document.filename}`
+                                                : `${child.filename} (deleted)`
+                                        }
                                     >
-                                        {document.filename}
-                                    </span>
-                                </button>
-                            ))}
+                                        <CornerDownRight
+                                            className={`mr-2 h-3.5 w-3.5 shrink-0 ${document ? "text-gray-400" : "text-gray-300"}`}
+                                            aria-hidden="true"
+                                        />
+                                        <FileTypeIcon
+                                            fileType={
+                                                document?.file_type ??
+                                                child.filename
+                                            }
+                                            className="mr-2 h-3.5 w-3.5"
+                                            muted={!document}
+                                        />
+                                        <span
+                                            className={`min-w-0 truncate ${document ? "" : "text-gray-300"}`}
+                                            title={
+                                                document
+                                                    ? document.filename
+                                                    : `${child.filename} — the source file has been deleted.`
+                                            }
+                                        >
+                                            {!document && (
+                                                <span className="font-medium text-gray-500">
+                                                    [Deleted]{" "}
+                                                </span>
+                                            )}
+                                            {document?.filename ??
+                                                child.filename}
+                                        </span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </TRExpandedCellSurface>

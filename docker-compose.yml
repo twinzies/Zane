@@ -140,6 +140,7 @@ services:
       - ./backend/migrations/20260827_02_reasoning_max.sql:/reasoning-max-migration.sql:ro
       - ./backend/migrations/20260827_03_remove_minimal_reasoning.sql:/remove-minimal-reasoning-migration.sql:ro
       - ./backend/migrations/20260829_01_moonshot_user_api_key_provider.sql:/moonshot-api-key-migration.sql:ro
+      - ./backend/migrations/20260831_01_tabular_review_deleted_documents.sql:/tabular-deleted-documents-migration.sql:ro
     entrypoint: ["bash", "-c"]
     command:
       - |
@@ -162,6 +163,7 @@ services:
         psql "$$DB" -v ON_ERROR_STOP=1 -f /reasoning-max-migration.sql;
         psql "$$DB" -v ON_ERROR_STOP=1 -f /remove-minimal-reasoning-migration.sql;
         psql "$$DB" -v ON_ERROR_STOP=1 -f /moonshot-api-key-migration.sql;
+        psql "$$DB" -v ON_ERROR_STOP=1 -f /tabular-deleted-documents-migration.sql;
         psql "$$DB" -c "grant usage on schema public to service_role;
           grant all privileges on all tables in schema public to service_role;
           grant all privileges on all sequences in schema public to service_role;
