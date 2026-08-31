@@ -50,7 +50,7 @@ export function SiteLogo({
             >
                 <ZaneIcon size={iconSizes[size]} />
             </span>
-            <span className="font-script">zane</span>
+            <span className="font-script font-bold">zane</span>
         </Wrapper>
     );
 
