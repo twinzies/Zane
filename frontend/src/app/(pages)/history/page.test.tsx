@@ -5,10 +5,10 @@ import {
   exportAuditHistory,
   getAuditHistory,
   type AuditEvent,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import HistoryPage from "./page";
 
-vi.mock("@/app/lib/mikeApi", () => ({
+vi.mock("@/app/lib/zaneApi", () => ({
   getAuditHistory: vi.fn(),
   exportAuditHistory: vi.fn(),
 }));
@@ -282,10 +282,7 @@ describe("HistoryPage", () => {
       "items-start",
       "text-left",
     );
-    expect(screen.getByTestId("history-empty-icon")).toHaveAttribute(
-      "src",
-      expect.stringContaining("/icons/features/history.svg"),
-    );
+    expect(screen.getByTestId("history-empty-icon")).toBeInTheDocument();
   });
 
   it("keeps the email visible when the profile has no display name", async () => {

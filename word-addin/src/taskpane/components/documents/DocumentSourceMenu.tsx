@@ -6,9 +6,8 @@ import {
   DropdownContent,
   DropdownItem,
   DropdownTrigger,
-} from "@mike/dropdown-ui";
-import desktopIcon from "@icons/desktop.svg";
-import earthIcon from "@icons/earth.svg";
+} from "@zane/dropdown-ui";
+import { Globe, Monitor } from "lucide-react";
 
 interface DocumentSourceMenuProps {
   attachedCount: number;
@@ -53,22 +52,16 @@ export function DocumentSourceMenu({
         className="min-w-36"
       >
         <DropdownItem onSelect={onLocalFiles}>
-          <img
-            src={desktopIcon}
-            alt=""
+          <Monitor
             aria-hidden="true"
-            draggable={false}
-            className="h-4 w-4 shrink-0 object-contain"
+            className="h-4 w-4 shrink-0 text-gray-500"
           />
           Desktop Files
         </DropdownItem>
         <DropdownItem onSelect={onWebFiles}>
-          <img
-            src={earthIcon}
-            alt=""
+          <Globe
             aria-hidden="true"
-            draggable={false}
-            className="h-4 w-4 shrink-0 object-contain"
+            className="h-4 w-4 shrink-0 text-gray-500"
           />
           Web files
         </DropdownItem>

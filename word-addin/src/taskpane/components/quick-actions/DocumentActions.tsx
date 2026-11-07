@@ -5,7 +5,7 @@ import {
   createQuickAction,
   listWorkflows,
   updateQuickAction,
-} from "../../api/mikeApi";
+} from "../../api/zaneApi";
 import type { QuickAction, Workflow } from "../../types";
 import {
   addQuickAction,

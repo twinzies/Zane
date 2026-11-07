@@ -26,7 +26,7 @@ import {
     isDocxFilename,
     isSpreadsheetFilename,
 } from "@/app/components/shared/types";
-import type { DocumentVersion } from "@/app/lib/mikeApi";
+import type { DocumentVersion } from "@/app/lib/zaneApi";
 import { cn } from "@/app/lib/utils";
 import {
     LIQUID_FLOAT_PANEL_SURFACE_CLASS,
@@ -574,7 +574,7 @@ export function DocumentSidePanel({
                     )}
                 >
                     <div className="mb-4 shrink-0">
-                        <div className="mb-3 text-xs font-medium text-gray-900">
+                        <div className="mb-1.5 text-xs font-semibold text-gray-500">
                             Name
                         </div>
                         {editingName ? (
@@ -596,7 +596,7 @@ export function DocumentSidePanel({
                                                 setNameError(null);
                                             }
                                         }}
-                                        className="h-6 min-w-0 flex-1 border-0 border-b border-gray-300 bg-transparent px-0 text-xs leading-6 text-gray-900 outline-none transition-colors focus:border-gray-500"
+                                        className="h-6 min-w-0 flex-1 border-0 border-b border-gray-300 bg-transparent px-0 text-[15px] font-medium leading-6 text-gray-900 outline-none transition-colors focus:border-gray-500"
                                         autoFocus
                                     />
                                     <button
@@ -621,7 +621,7 @@ export function DocumentSidePanel({
                             </div>
                         ) : (
                             <div className="flex min-h-6 items-center gap-2">
-                                <div className="min-w-0 flex-1 truncate text-xs leading-6 text-gray-800">
+                                <div className="min-w-0 flex-1 truncate text-[15px] font-medium leading-6 text-gray-800">
                                     {selectedFilename}
                                 </div>
                                 {selectedVersionId && (
@@ -642,7 +642,7 @@ export function DocumentSidePanel({
                         )}
                     </div>
 
-                    <div className="mb-3 shrink-0 text-xs font-medium text-gray-900">
+                    <div className="mb-1.5 shrink-0 text-xs font-semibold text-gray-500">
                         Document Data
                     </div>
                     <div className="shrink-0 rounded-xl py-2">
@@ -687,7 +687,7 @@ export function DocumentSidePanel({
                         </div>
                     </div>
 
-                    <div className="mb-2 mt-4 shrink-0 text-xs font-medium text-gray-900">
+                    <div className="mb-1.5 mt-4 shrink-0 text-xs font-semibold text-gray-500">
                         Versions
                     </div>
                     <div className="-mx-2 min-h-0 flex-1 overflow-y-auto px-2 py-2">

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SETTINGS_MODELS } from "../components/assistant/ModelToggle";
-import type { ApiKeyState } from "./mikeApi";
+import type { ApiKeyState } from "./zaneApi";
 import {
     getModelProvider,
     isModelAvailable,
@@ -13,6 +13,7 @@ const keys = (configured: {
     claude?: boolean;
     gemini?: boolean;
     openai?: boolean;
+    moonshot?: boolean;
     openrouter?: boolean;
     vercel?: boolean;
     opencodego?: boolean;
@@ -21,6 +22,7 @@ const keys = (configured: {
         claude: { configured: !!configured.claude, source: null },
         gemini: { configured: !!configured.gemini, source: null },
         openai: { configured: !!configured.openai, source: null },
+        moonshot: { configured: !!configured.moonshot, source: null },
         openrouter: { configured: !!configured.openrouter, source: null },
         vercel: { configured: !!configured.vercel, source: null },
         "opencode-go": {
@@ -40,6 +42,13 @@ describe("getModelProvider", () => {
         );
         expect(getModelProvider("vercel/openai/gpt-5.4")).toBe("vercel");
         expect(getModelProvider("opencode-go/glm-5")).toBe("opencode-go");
+        expect(getModelProvider("kimi-k3")).toBe("moonshot");
+    });
+
+    it("keeps a router-prefixed Kimi id on its router", () => {
+        // The direct Moonshot catalog and OpenCode Go's both use kimi-* ids;
+        // the router prefix has to win so the key gating stays correct.
+        expect(getModelProvider("opencode-go/kimi-k3")).toBe("opencode-go");
     });
 
     it("resolves any ollama/-prefixed id without consulting SETTINGS_MODELS", () => {
@@ -96,6 +105,13 @@ describe("isModelAvailable", () => {
                 keys({ claude: true, gemini: true, openai: true }),
             ),
         ).toBe(false);
+    });
+
+    it("gates direct Kimi models on the moonshot key", () => {
+        expect(isModelAvailable("kimi-k3", keys({ moonshot: true }))).toBe(
+            true,
+        );
+        expect(isModelAvailable("kimi-k3", keys({ openai: true }))).toBe(false);
     });
 
     it("is true for ollama models even with no keys configured", () => {

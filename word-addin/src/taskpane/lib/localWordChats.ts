@@ -2,7 +2,7 @@ import type { Chat, Message, WordDocumentEdit } from "../types";
 import type { PersistedWordEditPatch } from "./wordChatTypes";
 import { notifyWordChatHistoryChanged } from "./wordChatHistoryEvents";
 
-const DATABASE_NAME = "mike-word-addin";
+const DATABASE_NAME = "zane-word-addin";
 const DATABASE_VERSION = 4;
 const CHAT_STORE = "word-chats";
 const MESSAGE_STORE = "word-chat-messages";

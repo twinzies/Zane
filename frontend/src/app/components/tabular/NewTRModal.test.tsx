@@ -3,11 +3,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
     uploadProjectDocument,
     uploadStandaloneDocument,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import type { Document } from "../shared/types";
 import { NewTRModal } from "./NewTRModal";
 
-vi.mock("@/app/lib/mikeApi", () => ({
+vi.mock("@/app/lib/zaneApi", () => ({
     getProject: vi.fn(),
     listWorkflows: vi.fn(async () => []),
     uploadProjectDocument: vi.fn(),
@@ -22,6 +22,7 @@ vi.mock("@/app/contexts/UserProfileContext", () => ({
                 claude: { configured: false, source: null },
                 gemini: { configured: true, source: "user" },
                 openai: { configured: false, source: null },
+                moonshot: { configured: false, source: null },
                 openrouter: { configured: false, source: null },
                 vercel: { configured: false, source: null },
                 "opencode-go": { configured: false, source: null },

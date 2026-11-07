@@ -559,3 +559,55 @@ describe("active Word document context", () => {
         expect(writes).toEqual([]);
     });
 });
+
+describe("buildMessages empty assistant turns", () => {
+    type ApiMessage = { role: string; content: string };
+
+    /**
+     * A turn that fails before producing text persists an empty assistant
+     * message so the UI has something to attach the error to. Replaying it
+     * makes providers reject the whole request ("the message at position N
+     * with role 'assistant' must not be empty"), which used to break every
+     * later message in that thread.
+     */
+    it("omits an empty assistant message from the provider payload", () => {
+        const messages = buildMessages(
+            [
+                { role: "user", content: "first question" },
+                { role: "assistant", content: "" },
+                { role: "user", content: "second question" },
+            ],
+            [],
+        ) as ApiMessage[];
+
+        const roles = messages.slice(1).map((m) => m.role);
+        expect(roles).toEqual(["user", "user"]);
+        expect(messages.some((m) => m.role === "assistant")).toBe(false);
+    });
+
+    it("omits a whitespace-only assistant message", () => {
+        const messages = buildMessages(
+            [
+                { role: "user", content: "hi" },
+                { role: "assistant", content: "   \n  " },
+            ],
+            [],
+        ) as ApiMessage[];
+
+        expect(messages.some((m) => m.role === "assistant")).toBe(false);
+    });
+
+    it("keeps assistant messages that have content", () => {
+        const messages = buildMessages(
+            [
+                { role: "user", content: "hi" },
+                { role: "assistant", content: "hello there" },
+            ],
+            [],
+        ) as ApiMessage[];
+
+        expect(
+            messages.find((m) => m.role === "assistant")?.content,
+        ).toBe("hello there");
+    });
+});

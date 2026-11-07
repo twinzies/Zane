@@ -26,6 +26,10 @@ export const OPENAI_MAIN_MODELS = [
     "gpt-5.5",
     "gpt-5.4",
 ] as const;
+// Moonshot AI (Kimi), called directly rather than through a router. These ids
+// mirror the Kimi slugs OpenCode Go publishes; Moonshot's own /v1/models is
+// the authority for the direct API, so verify these before relying on them.
+export const MOONSHOT_MAIN_MODELS = ["kimi-k3", "kimi-k2.6"] as const;
 // Ollama models are detected dynamically (see GET /models/ollama). Any id of
 // the form "ollama/<tag>" is valid — see providerForModel / resolveModel.
 
@@ -41,6 +45,7 @@ export const GEMINI_MID_MODELS = [
     "gemini-3-flash-preview",
 ] as const;
 export const OPENAI_MID_MODELS = ["gpt-5.6-terra", "gpt-5.4"] as const;
+export const MOONSHOT_MID_MODELS = ["kimi-k2.6"] as const;
 
 // Low-tier (used for title generation, lightweight extractions) — user picks
 // one in account settings.
@@ -50,6 +55,9 @@ export const GEMINI_LOW_MODELS = [
     "gemini-3.1-flash-lite",
 ] as const;
 export const OPENAI_LOW_MODELS = ["gpt-5.6-luna", "gpt-5.4-mini"] as const;
+// Moonshot publishes no cheaper title-tier Kimi model, so the mid-tier id is
+// reused here rather than inventing one.
+export const MOONSHOT_LOW_MODELS = ["kimi-k2.6"] as const;
 
 export const DEFAULT_MAIN_MODEL = "gemini-3-flash-preview";
 export const DEFAULT_TITLE_MODEL = "gemini-3.5-flash-lite";
@@ -94,7 +102,7 @@ export function normalizeReasoningLevelForModel(
 // OpenAI Responses, Anthropic Messages, and OpenAI Chat Completions. The live
 // /models payload does not identify a model's protocol, so keep these lists
 // fail-closed and in sync with https://opencode.ai/docs/go/#endpoints. A new
-// catalog entry is not offered until Mike can actually speak its protocol.
+// catalog entry is not offered until zane can actually speak its protocol.
 export const OPENCODE_GO_CHAT_COMPLETIONS_MODEL_IDS: ReadonlySet<string> =
     new Set([
         "glm-5",
@@ -125,12 +133,15 @@ const ALL_MODELS = new Set<string>([
     ...CLAUDE_MAIN_MODELS,
     ...GEMINI_MAIN_MODELS,
     ...OPENAI_MAIN_MODELS,
+    ...MOONSHOT_MAIN_MODELS,
     ...CLAUDE_MID_MODELS,
     ...GEMINI_MID_MODELS,
     ...OPENAI_MID_MODELS,
+    ...MOONSHOT_MID_MODELS,
     ...CLAUDE_LOW_MODELS,
     ...GEMINI_LOW_MODELS,
     ...OPENAI_LOW_MODELS,
+    ...MOONSHOT_LOW_MODELS,
 ]);
 
 // ---------------------------------------------------------------------------
@@ -145,6 +156,9 @@ export function providerForModel(model: string): Provider {
     if (model.startsWith("claude")) return "claude";
     if (model.startsWith("gemini")) return "gemini";
     if (model.startsWith("gpt-")) return "openai";
+    // Router-prefixed Kimi ids are matched above, so a bare "kimi-" id is the
+    // direct Moonshot API.
+    if (model.startsWith("kimi-")) return "moonshot";
     throw new Error(`Unknown model id: ${model}`);
 }
 

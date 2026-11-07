@@ -9,7 +9,7 @@ import { PillButton } from "@/app/components/ui/pill-button";
 import { FullScreenLoader } from "@/app/components/shared/FullScreenLoader";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useUserProfile } from "@/app/contexts/UserProfileContext";
-import { updateUserProfile } from "@/app/lib/mikeApi";
+import { updateUserProfile } from "@/app/lib/zaneApi";
 import { FieldLabel } from "@/app/components/ui/form-field";
 
 export default function OnboardingProfilePage() {
@@ -76,7 +76,7 @@ function ProfileDetailsForm({
         <OnboardingShell
             step="Step 1 of 2"
             title="Tell us about you"
-            description="Add the details we should use across Mike."
+            description="Add the details we should use across Zane."
         >
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>

@@ -375,6 +375,20 @@ export function buildMessages(
       });
       content = `[The user attached the following document(s) to this message:\n${lines.join("\n")}]\n\n${content}`;
     }
+    // A turn that fails before producing text persists an empty assistant
+    // message, which the UI needs so it has something to hang the error on.
+    // Providers reject empty assistant turns outright ("the message at
+    // position N with role 'assistant' must not be empty"), so replaying one
+    // breaks every later request in that thread. Dropping it here loses
+    // nothing — the row carries no content — and heals threads that already
+    // recorded a failure.
+    if (
+      msg.role === "assistant" &&
+      typeof content === "string" &&
+      !content.trim()
+    ) {
+      continue;
+    }
     formatted.push({ role: msg.role, content });
   }
   return formatted;
@@ -780,7 +794,7 @@ export async function buildWorkflowStore(
   // expose them through list_workflows. Active versions sort first; inactive
   // content-addressed versions remain available as a fallback.
   const { data: catalogWorkflows, error: catalogError } = await db
-    .from("mike_workflows")
+    .from("zane_workflows")
     .select("workflow_key, title, prompt_md, active, updated_at")
     .eq("type", "assistant")
     .order("active", { ascending: false })

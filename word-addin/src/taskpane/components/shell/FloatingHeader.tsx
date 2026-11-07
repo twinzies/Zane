@@ -19,13 +19,15 @@ import {
 import {
   HeaderButtonUI,
   HeaderButtonsUI,
-} from "@mike/header-buttons-ui";
-import chatIcon from "@icons/features/chat.svg";
-import quickActionsIcon from "@icons/features/quick-actions.svg";
-import workflowIcon from "@icons/features/workflow.svg";
-import chatHistoryIcon from "@icons/features/chat-history.svg";
-import settingsIcon from "@icons/settings.svg";
-import signOutIcon from "@icons/sign-out.svg";
+} from "@zane/header-buttons-ui";
+import {
+  History,
+  LogOut,
+  MessageSquare,
+  Settings,
+  Workflow,
+  Zap,
+} from "lucide-react";
 import { ChatHistoryDropdown } from "../history/ChatHistoryDropdown";
 import {
   Dropdown,
@@ -33,7 +35,7 @@ import {
   DropdownItem,
   DropdownSeparator,
   DropdownTrigger,
-} from "@mike/dropdown-ui";
+} from "@zane/dropdown-ui";
 import type { WordChatStorageMode } from "../../lib/wordChatSettings";
 
 export type AddinSection =
@@ -69,19 +71,19 @@ interface FloatingHeaderProps {
 }
 
 const SECTIONS = [
-  { value: "chat" as const, label: "Assistant", icon: chatIcon },
+  { value: "chat" as const, label: "Assistant", icon: MessageSquare },
   {
     value: "history" as const,
     label: "Chat History",
-    icon: chatHistoryIcon,
+    icon: History,
   },
   {
     value: "actions" as const,
     label: "Quick Actions",
-    icon: quickActionsIcon,
+    icon: Zap,
   },
-  { value: "workflows" as const, label: "Workflows", icon: workflowIcon },
-  { value: "settings" as const, label: "Settings", icon: settingsIcon },
+  { value: "workflows" as const, label: "Workflows", icon: Workflow },
+  { value: "settings" as const, label: "Settings", icon: Settings },
 ];
 
 export function FloatingHeader({
@@ -155,12 +157,9 @@ export function FloatingHeader({
                   onSelect={() => onSectionChange(item.value)}
                   selected={section === item.value}
                 >
-                  <img
-                    src={item.icon}
-                    alt=""
+                  <item.icon
                     aria-hidden="true"
-                    draggable={false}
-                    className="h-4 w-4 shrink-0 object-contain"
+                    className="h-4 w-4 shrink-0 text-gray-500"
                   />
                   <span className="min-w-0 flex-1">{item.label}</span>
                 </DropdownItem>
@@ -168,12 +167,9 @@ export function FloatingHeader({
             })}
             <DropdownSeparator />
             <DropdownItem onSelect={onSignOut}>
-              <img
-                src={signOutIcon}
-                alt=""
+              <LogOut
                 aria-hidden="true"
-                draggable={false}
-                className="h-4 w-4 shrink-0 object-contain"
+                className="h-4 w-4 shrink-0 text-gray-500"
               />
               <span className="min-w-0 flex-1">Sign out</span>
             </DropdownItem>

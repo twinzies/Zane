@@ -8,7 +8,7 @@ import type {
   WordReasoningEvent,
   WordThinkingEvent,
 } from "../../types";
-import { PillButtonUI as PillButton } from "@mike/pill-button-ui";
+import { PillButtonUI as PillButton } from "@zane/pill-button-ui";
 import { EditCard } from "./EditCard";
 import { PreResponseWrapper } from "./PreResponseWrapper";
 import { EditCardsSection } from "./message/EditCardsSection";
@@ -116,7 +116,7 @@ function AssistantMessageImpl({
   const handleCitationClick = React.useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       const target = event.target as HTMLElement;
-      const citationControl = target.closest?.("[data-mike-citation]");
+      const citationControl = target.closest?.("[data-zane-citation]");
       const href =
         citationControl?.getAttribute("data-citation-href") ??
         citationControl?.getAttribute("href");

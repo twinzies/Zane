@@ -97,6 +97,11 @@ const TABULAR_GENERATION_LEASE_SECONDS = 300;
 const TABULAR_GENERATION_HEARTBEAT_MS = 60_000;
 
 type DocumentGrouping = "document" | "folder";
+type RowSourceDocument = {
+    document_id: string | null;
+    filename: string;
+    deleted: boolean;
+};
 type ReviewRow = {
     id: string;
     review_id: string;
@@ -106,7 +111,12 @@ type ReviewRow = {
     library_folder_id: string | null;
     document_id: string | null;
     sort_index: number;
+    /** Surviving source document ids only. Deleted sources are omitted. */
     source_document_ids?: string[];
+    /** Every source the row was built from, including deleted ones. */
+    source_documents?: RowSourceDocument[];
+    /** True once no source document survives — the row is a tombstone. */
+    is_deleted?: boolean;
 };
 type SourceDocument = {
     id: string;
@@ -161,6 +171,28 @@ async function fetchSourceDocuments(
             file_type: doc.file_type ?? null,
         }))
         .sort((a, b) => (position.get(a.id) ?? 0) - (position.get(b.id) ?? 0));
+}
+
+// Of the ids the caller could not resolve, the ones the review already knew
+// about and that no longer exist as documents — deleted, as opposed to merely
+// inaccessible to this user.
+async function filterDeletedDocumentIds(
+    db: SupabaseDb,
+    candidateIds: string[],
+    storedIds: string[],
+): Promise<string[]> {
+    const stored = new Set(storedIds);
+    const previouslyStored = [
+        ...new Set(candidateIds.filter((id) => stored.has(id))),
+    ];
+    if (previouslyStored.length === 0) return [];
+    const { data, error } = await db
+        .from("documents")
+        .select("id")
+        .in("id", previouslyStored);
+    if (error) throw new Error(error.message);
+    const alive = new Set(((data ?? []) as { id: string }[]).map((d) => d.id));
+    return previouslyStored.filter((id) => !alive.has(id));
 }
 
 function buildFolderPathMap(
@@ -220,24 +252,53 @@ async function getFolderPathMaps(
     };
 }
 
-async function createRowsForReview(
+type RowInput = {
+    /** Stable key used to match a desired row against an existing one. */
+    identity: string;
+    label: string;
+    row_type: "document" | "folder";
+    folder_id: string | null;
+    library_folder_id: string | null;
+    document_id: string | null;
+    sources: { document_id: string; document_filename: string }[];
+};
+
+function folderIdentity(
+    folderId: string | null,
+    libraryFolderId: string | null,
+): string | null {
+    if (folderId) return `project:${folderId}`;
+    if (libraryFolderId) return `library:${libraryFolderId}`;
+    return null;
+}
+
+function rowIdentity(row: ReviewRow): string | null {
+    return row.row_type === "folder"
+        ? folderIdentity(row.folder_id, row.library_folder_id)
+        : row.document_id
+          ? `document:${row.document_id}`
+          : null;
+}
+
+async function buildRowInputs(
     db: SupabaseDb,
-    reviewId: string,
     userId: string,
     documentIds: string[],
-    columns: Column[],
     grouping: DocumentGrouping,
-): Promise<void> {
+): Promise<RowInput[]> {
     const docs = await fetchSourceDocuments(db, documentIds);
     const folderPaths = await getFolderPathMaps(db, userId, docs);
-    const inputs: {
-        label: string;
-        row_type: "document" | "folder";
-        folder_id: string | null;
-        library_folder_id: string | null;
-        document_id: string | null;
-        sourceIds: string[];
-    }[] = [];
+    const inputs: RowInput[] = [];
+
+    const documentInput = (doc: SourceDocument): RowInput => ({
+        identity: `document:${doc.id}`,
+        label: doc.filename,
+        row_type: "document",
+        folder_id: null,
+        library_folder_id: null,
+        document_id: doc.id,
+        sources: [{ document_id: doc.id, document_filename: doc.filename }],
+    });
 
     if (grouping === "folder") {
         const byFolder = new Map<
@@ -249,20 +310,12 @@ async function createRowsForReview(
             }
         >();
         for (const doc of docs) {
-            const folderKey = doc.folder_id
-                ? `project:${doc.folder_id}`
-                : doc.library_folder_id
-                  ? `library:${doc.library_folder_id}`
-                  : null;
+            const folderKey = folderIdentity(
+                doc.folder_id ?? null,
+                doc.library_folder_id ?? null,
+            );
             if (!folderKey) {
-                inputs.push({
-                    label: doc.filename,
-                    row_type: "document",
-                    folder_id: null,
-                    library_folder_id: null,
-                    document_id: doc.id,
-                    sourceIds: [doc.id],
-                });
+                inputs.push(documentInput(doc));
                 continue;
             }
             const existing = byFolder.get(folderKey);
@@ -276,41 +329,43 @@ async function createRowsForReview(
                 });
             }
         }
-        for (const folder of byFolder.values()) {
+        for (const [identity, folder] of byFolder) {
             const label = folder.folder_id
                 ? folderPaths.project.get(folder.folder_id)
                 : folder.library_folder_id
                   ? folderPaths.library.get(folder.library_folder_id)
                   : null;
             inputs.push({
+                identity,
                 label: label ?? "Unknown folder",
                 row_type: "folder",
                 folder_id: folder.folder_id,
                 library_folder_id: folder.library_folder_id,
                 document_id: null,
-                sourceIds: folder.docs.map((doc) => doc.id),
+                sources: folder.docs.map((doc) => ({
+                    document_id: doc.id,
+                    document_filename: doc.filename,
+                })),
             });
         }
     } else {
-        for (const doc of docs) {
-            inputs.push({
-                label: doc.filename,
-                row_type: "document",
-                folder_id: null,
-                library_folder_id: null,
-                document_id: doc.id,
-                sourceIds: [doc.id],
-            });
-        }
+        for (const doc of docs) inputs.push(documentInput(doc));
     }
 
     inputs.sort((a, b) => a.label.localeCompare(b.label));
-    if (inputs.length === 0) return;
+    return inputs;
+}
 
+async function insertReviewRows(
+    db: SupabaseDb,
+    reviewId: string,
+    entries: { input: RowInput; sort_index: number }[],
+): Promise<void> {
+    if (entries.length === 0) return;
     const { data, error } = await db
         .from("tabular_review_rows")
         .insert(
-            inputs.map((input, sort_index) => ({
+            entries.map(({ input, sort_index }) => ({
                 review_id: reviewId,
                 label: input.label,
                 row_type: input.row_type,
@@ -322,14 +377,16 @@ async function createRowsForReview(
         )
         .select("*");
     if (error) throw new Error(error.message);
-    const rows = ((data ?? []) as ReviewRow[]).sort(
-        (a, b) => a.sort_index - b.sort_index,
+
+    const inputBySortIndex = new Map(
+        entries.map(({ input, sort_index }) => [sort_index, input]),
     );
-    const sources = rows.flatMap((row) =>
-        (inputs[row.sort_index]?.sourceIds ?? []).map(
-            (document_id, sort_index) => ({
+    const sources = ((data ?? []) as ReviewRow[]).flatMap((row) =>
+        (inputBySortIndex.get(row.sort_index)?.sources ?? []).map(
+            (source, sort_index) => ({
                 row_id: row.id,
-                document_id,
+                document_id: source.document_id,
+                document_filename: source.document_filename,
                 sort_index,
             }),
         ),
@@ -340,23 +397,30 @@ async function createRowsForReview(
             .insert(sources);
         if (sourceError) throw new Error(sourceError.message);
     }
-    const cells = rows.flatMap((row) =>
-        columns.map((column) => ({
-            review_id: reviewId,
-            row_id: row.id,
-            document_id: row.document_id,
-            column_index: column.index,
-            status: "pending",
-        })),
-    );
-    if (cells.length) {
-        const { error: cellError } = await db
-            .from("tabular_cells")
-            .insert(cells);
-        if (cellError) throw new Error(cellError.message);
-    }
 }
 
+async function createRowsForReview(
+    db: SupabaseDb,
+    reviewId: string,
+    userId: string,
+    documentIds: string[],
+    columns: Column[],
+    grouping: DocumentGrouping,
+): Promise<void> {
+    const inputs = await buildRowInputs(db, userId, documentIds, grouping);
+    if (inputs.length === 0) return;
+    await insertReviewRows(
+        db,
+        reviewId,
+        inputs.map((input, sort_index) => ({ input, sort_index })),
+    );
+    await syncCellsForReviewRows(db, reviewId, columns);
+}
+
+// Reconciles the review's rows against the requested document set instead of
+// recreating them. Rebuilding from scratch would cascade every row's generated
+// cells away, and would discard the tombstones left behind by deleted
+// documents. Tombstones are only ever removed through the explicit row delete.
 async function rebuildRowsForReview(
     db: SupabaseDb,
     reviewId: string,
@@ -365,19 +429,71 @@ async function rebuildRowsForReview(
     columns: Column[],
     grouping: DocumentGrouping,
 ): Promise<void> {
-    const { error } = await db
-        .from("tabular_review_rows")
-        .delete()
-        .eq("review_id", reviewId);
-    if (error) throw new Error(error.message);
-    await createRowsForReview(
-        db,
-        reviewId,
-        userId,
-        documentIds,
-        columns,
-        grouping,
-    );
+    const inputs = await buildRowInputs(db, userId, documentIds, grouping);
+    const existingRows = await loadReviewRows(db, reviewId);
+    const desired = new Map(inputs.map((input) => [input.identity, input]));
+
+    const kept: { row: ReviewRow; label: string }[] = [];
+    const matched = new Set<string>();
+    const removeIds: string[] = [];
+    for (const row of existingRows) {
+        const identity = rowIdentity(row);
+        const input = identity ? desired.get(identity) : undefined;
+        if (input && identity) {
+            matched.add(identity);
+            kept.push({ row, label: input.label });
+        } else if (row.is_deleted) {
+            kept.push({ row, label: row.label });
+        } else {
+            removeIds.push(row.id);
+        }
+    }
+
+    if (removeIds.length) {
+        const { error } = await db
+            .from("tabular_review_rows")
+            .delete()
+            .in("id", removeIds);
+        if (error) throw new Error(error.message);
+    }
+
+    const added = inputs.filter((input) => !matched.has(input.identity));
+    const ordered: (
+        | { label: string; kind: "kept"; row: ReviewRow }
+        | { label: string; kind: "added"; input: RowInput }
+    )[] = [
+        ...kept.map(
+            (entry) =>
+                ({ label: entry.label, kind: "kept", row: entry.row }) as const,
+        ),
+        ...added.map(
+            (input) => ({ label: input.label, kind: "added", input }) as const,
+        ),
+    ].sort((a, b) => a.label.localeCompare(b.label));
+
+    const inserts: { input: RowInput; sort_index: number }[] = [];
+    const updates: Promise<void>[] = [];
+    ordered.forEach((entry, sort_index) => {
+        if (entry.kind === "added") {
+            inserts.push({ input: entry.input, sort_index });
+            return;
+        }
+        const { row, label } = entry;
+        if (row.sort_index === sort_index && row.label === label) return;
+        updates.push(
+            (async () => {
+                const { error } = await db
+                    .from("tabular_review_rows")
+                    .update({ label, sort_index })
+                    .eq("id", row.id);
+                if (error) throw new Error(error.message);
+            })(),
+        );
+    });
+
+    await Promise.all(updates);
+    await insertReviewRows(db, reviewId, inserts);
+    await syncCellsForReviewRows(db, reviewId, columns);
 }
 
 async function syncCellsForReviewRows(
@@ -385,11 +501,7 @@ async function syncCellsForReviewRows(
     reviewId: string,
     columns: Column[],
 ): Promise<void> {
-    const { data: rows, error: rowsError } = await db
-        .from("tabular_review_rows")
-        .select("id,document_id")
-        .eq("review_id", reviewId);
-    if (rowsError) throw new Error(rowsError.message);
+    const rows = await loadReviewRows(db, reviewId);
     const { data: cells, error: cellsError } = await db
         .from("tabular_cells")
         .select("id,row_id,column_index")
@@ -413,17 +525,23 @@ async function syncCellsForReviewRows(
             .filter((cell) => activeColumnIndexes.has(cell.column_index))
             .map((cell) => `${cell.row_id}:${cell.column_index}`),
     );
-    const missingCells = (rows ?? []).flatMap((row) =>
-        columns
-            .filter((column) => !existingKeys.has(`${row.id}:${column.index}`))
-            .map((column) => ({
-                review_id: reviewId,
-                row_id: row.id,
-                document_id: row.document_id,
-                column_index: column.index,
-                status: "pending",
-            })),
-    );
+    // Tombstones get no new cells: there is no document left to read, so a
+    // pending cell there would never resolve.
+    const missingCells = rows
+        .filter((row) => !row.is_deleted)
+        .flatMap((row) =>
+            columns
+                .filter(
+                    (column) => !existingKeys.has(`${row.id}:${column.index}`),
+                )
+                .map((column) => ({
+                    review_id: reviewId,
+                    row_id: row.id,
+                    document_id: row.document_id,
+                    column_index: column.index,
+                    status: "pending",
+                })),
+        );
     if (missingCells.length) {
         const { error } = await db.from("tabular_cells").insert(missingCells);
         if (error) throw new Error(error.message);
@@ -444,25 +562,58 @@ async function loadReviewRows(
     if (!rows.length) return rows;
     const { data: sources, error: sourceError } = await db
         .from("tabular_review_row_sources")
-        .select("row_id, document_id")
+        .select("row_id, document_id, document_filename")
         .in(
             "row_id",
             rows.map((row) => row.id),
         )
         .order("sort_index", { ascending: true });
     if (sourceError) throw new Error(sourceError.message);
-    const byRow = new Map<string, string[]>();
-    for (const source of sources ?? []) {
+    const byRow = new Map<string, RowSourceDocument[]>();
+    for (const source of (sources ?? []) as {
+        row_id: string;
+        document_id: string | null;
+        document_filename: string | null;
+    }[]) {
         byRow.set(source.row_id, [
             ...(byRow.get(source.row_id) ?? []),
-            source.document_id,
+            {
+                document_id: source.document_id,
+                filename:
+                    source.document_filename?.trim() || "Untitled document",
+                deleted: !source.document_id,
+            },
         ]);
     }
-    return rows.map((row) => ({
-        ...row,
-        source_document_ids:
-            byRow.get(row.id) ?? (row.document_id ? [row.document_id] : []),
-    }));
+    return rows.map((row) => {
+        const sourceDocuments =
+            byRow.get(row.id) ??
+            (row.document_id
+                ? [
+                      {
+                          document_id: row.document_id,
+                          filename: row.label,
+                          deleted: false,
+                      },
+                  ]
+                : []);
+        const surviving = sourceDocuments.filter((source) => !source.deleted);
+        // Rows whose documents were deleted before source records outlived
+        // them have no sources at all; a document row without a document_id is
+        // the same tombstone by another route.
+        const isDeleted =
+            surviving.length === 0 &&
+            (sourceDocuments.length > 0 ||
+                (row.row_type === "document" && !row.document_id));
+        return {
+            ...row,
+            source_documents: sourceDocuments,
+            source_document_ids: surviving.map(
+                (source) => source.document_id as string,
+            ),
+            is_deleted: isDeleted,
+        };
+    });
 }
 
 async function loadRowDocumentText(
@@ -1051,12 +1202,24 @@ tabularRouter.patch("/:reviewId", requireAuth, async (req, res) => {
         updates.document_grouping = req.body.document_grouping;
     }
     if (Array.isArray(req.body.document_ids)) {
-        updates.document_ids = await filterAccessibleDocumentIds(
+        const accessible = await filterAccessibleDocumentIds(
             req.body.document_ids,
             userId,
             userEmail,
             db,
         );
+        // filterAccessibleDocumentIds also drops ids whose document has been
+        // deleted. Those must survive here, or the first unrelated edit would
+        // quietly erase the review's record of what it was generated from.
+        const deletedIds = await filterDeletedDocumentIds(
+            db,
+            (req.body.document_ids as unknown[]).filter(
+                (id): id is string =>
+                    typeof id === "string" && !accessible.includes(id),
+            ),
+            (existingReview.document_ids ?? []) as string[],
+        );
+        updates.document_ids = [...accessible, ...deletedIds];
     }
     if (sharedWithUpdate !== undefined) {
         if (!access.isOwner)
@@ -1069,7 +1232,7 @@ tabularRouter.patch("/:reviewId", requireAuth, async (req, res) => {
         );
         if (missingSharedUsers.length > 0) {
             return void res.status(400).json({
-                detail: `${missingSharedUsers[0]} does not belong to a Mike user.`,
+                detail: `${missingSharedUsers[0]} does not belong to a Zane user.`,
             });
         }
         updates.shared_with = sharedWithUpdate;
@@ -1242,6 +1405,133 @@ tabularRouter.post("/:reviewId/clear-cells", requireAuth, async (req, res) => {
     }
 });
 
+// DELETE /tabular-review/:reviewId/rows
+// Remove rows by id, including the tombstones left behind by deleted
+// documents. Row-scoped so that removing one document cannot disturb the
+// generated cells of any other row.
+tabularRouter.delete("/:reviewId/rows", requireAuth, async (req, res) => {
+    const userId = res.locals.userId as string;
+    const userEmail = res.locals.userEmail as string | undefined;
+    const { reviewId } = req.params;
+    const { row_ids } = req.body as { row_ids?: string[] };
+
+    if (!Array.isArray(row_ids) || row_ids.length === 0)
+        return void res.status(400).json({ detail: "row_ids is required" });
+
+    const db = createServerSupabase();
+    const { data: review, error: reviewError } = await db
+        .from("tabular_reviews")
+        .select(
+            "id, user_id, project_id, document_ids, updated_at, active_generation_id, generation_lease_expires_at",
+        )
+        .eq("id", reviewId)
+        .single();
+    if (reviewError || !review)
+        return void res.status(404).json({ detail: "Review not found" });
+    const access = await ensureReviewAccess(review, userId, userEmail, db);
+    if (!access.ok)
+        return void res.status(404).json({ detail: "Review not found" });
+    if (!access.isOwner)
+        return void res
+            .status(403)
+            .json({ detail: "Only the review owner can remove documents" });
+    if (isReviewGenerationRunning(review)) {
+        return void res.status(409).json({
+            code: "review_running",
+            detail: "This tabular review is currently running.",
+        });
+    }
+
+    const mutationId = randomUUID();
+    const { data: startResult, error: startError } = await db.rpc(
+        "begin_tabular_review_generation",
+        {
+            target_review_id: reviewId,
+            expected_updated_at: review.updated_at,
+            target_generation_id: mutationId,
+            lease_seconds: TABULAR_GENERATION_LEASE_SECONDS,
+        },
+    );
+    if (startError) return void sendInternalError(res, startError);
+    if (startResult === "running") {
+        return void res.status(409).json({
+            code: "review_running",
+            detail: "This tabular review is currently running.",
+        });
+    }
+    if (startResult === "stale") {
+        return void res.status(409).json({
+            code: "review_stale",
+            detail: "A newer version of this tabular review is available.",
+        });
+    }
+    if (startResult !== "started") {
+        return void res.status(startResult === "not_found" ? 404 : 500).json({
+            detail:
+                startResult === "not_found"
+                    ? "Review not found"
+                    : "Failed to remove tabular review rows",
+        });
+    }
+
+    try {
+        const rows = await loadReviewRows(db, reviewId);
+        const targeted = new Set(row_ids);
+        const removed = rows.filter((row) => targeted.has(row.id));
+        if (removed.length === 0) return void res.status(204).send();
+
+        const remaining = rows.filter((row) => !targeted.has(row.id));
+        const { error: deleteError } = await db
+            .from("tabular_review_rows")
+            .delete()
+            .eq("review_id", reviewId)
+            .in(
+                "id",
+                removed.map((row) => row.id),
+            );
+        if (deleteError) return void sendInternalError(res, deleteError);
+
+        // Keep document_ids an accurate record of what the review still holds.
+        // A tombstone's own id is unrecoverable once the document is gone, so
+        // dead ids are only dropped when no tombstone is left to explain them.
+        const storedIds = ((review.document_ids ?? []) as string[]).filter(
+            (id): id is string => typeof id === "string",
+        );
+        const survivingIds = new Set(
+            remaining.flatMap((row) => row.source_document_ids ?? []),
+        );
+        const keptIds = storedIds.filter((id) => survivingIds.has(id));
+        const deadIds = remaining.some((row) => row.is_deleted)
+            ? await filterDeletedDocumentIds(db, storedIds, storedIds)
+            : [];
+        const { error: updateError } = await db
+            .from("tabular_reviews")
+            .update({ document_ids: [...keptIds, ...deadIds] })
+            .eq("id", reviewId);
+        if (updateError) return void sendInternalError(res, updateError);
+
+        res.status(204).send();
+    } catch (error) {
+        sendInternalError(
+            res,
+            error instanceof Error
+                ? error
+                : new Error("Failed to remove tabular review rows"),
+        );
+    } finally {
+        const { error } = await db.rpc("finish_tabular_review_generation", {
+            target_review_id: reviewId,
+            target_generation_id: mutationId,
+        });
+        if (error) {
+            console.error(
+                "[tabular/rows] failed to release generation lease",
+                error,
+            );
+        }
+    }
+});
+
 // POST /tabular-review/:reviewId/regenerate-cell
 tabularRouter.post(
     "/:reviewId/regenerate-cell",
@@ -1296,6 +1586,10 @@ tabularRouter.post(
             return void res
                 .status(404)
                 .json({ detail: "Review row not found" });
+        if (row.is_deleted)
+            return void res.status(409).json({
+                detail: "This document has been deleted and can no longer be regenerated.",
+            });
         const sourceIds = row.source_document_ids ?? [];
         const allowedSourceIds = await filterAccessibleDocumentIds(
             sourceIds,
@@ -1610,10 +1904,14 @@ tabularRouter.post("/:reviewId/generate", requireAuth, async (req, res) => {
         const allowedSourceIds = new Set(
             await filterAccessibleDocumentIds(sourceIds, userId, userEmail, db),
         );
-        rows = rows.filter((row) =>
-            (row.source_document_ids ?? []).every((id) =>
-                allowedSourceIds.has(id),
-            ),
+        // Tombstones have no surviving source, so `.every()` would wave them
+        // through into a generation run with no document text to read.
+        rows = rows.filter(
+            (row) =>
+                !row.is_deleted &&
+                (row.source_document_ids ?? []).every((id) =>
+                    allowedSourceIds.has(id),
+                ),
         );
 
         if (generationAbort.signal.aborted || res.destroyed) return;
@@ -2063,7 +2361,7 @@ function buildTabularMessages(
         .map((c, i) => `- COL:${i} "${c.name}"`)
         .join("\n");
 
-    const systemContent = `You are Mike, an AI legal assistant. You are helping with the tabular review titled "${reviewTitle}".
+    const systemContent = `You are Zane, an AI legal assistant. You are helping with the tabular review titled "${reviewTitle}".
 
 The review extracts specific fields from multiple legal documents into a structured table.
 You do NOT have the cell content yet — call read_table_cells to fetch the cells you need before answering.

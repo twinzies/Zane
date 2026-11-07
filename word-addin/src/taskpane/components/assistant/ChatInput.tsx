@@ -14,7 +14,7 @@ import {
   listWorkflows,
   uploadStandaloneDocument,
   type ApiKeyStatus,
-} from "../../api/mikeApi";
+} from "../../api/zaneApi";
 import { useSelectedModel } from "../../hooks/useSelectedModel";
 import type { Document, Workflow } from "../../types";
 import {
@@ -35,7 +35,7 @@ import type {
 } from "../../lib/wordChatTypes";
 import { isModelAvailable, missingModelProvider } from "../../lib/modelCatalog";
 import { loadWithRetry } from "../../lib/composerPreflight";
-import { workflowSlashCommandFromTitle } from "@mike/workflow-slash-command-ui";
+import { workflowSlashCommandFromTitle } from "@zane/workflow-slash-command-ui";
 import {
   WORD_WORKFLOW_SLASH_MENU_ID,
   WorkflowSlashMenu,

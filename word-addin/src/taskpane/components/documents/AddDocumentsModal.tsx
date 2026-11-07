@@ -7,7 +7,7 @@ import {
   getProjectDirectoryLevel,
   listProjects,
   uploadStandaloneDocument,
-} from "../../api/mikeApi";
+} from "../../api/zaneApi";
 import {
   partitionSupportedDocumentFiles,
   SUPPORTED_DOCUMENT_ACCEPT,

@@ -85,7 +85,7 @@ Preserve the accessibility baseline:
 - Route and page components live in `frontend/src/app/`.
 - Shared domain types live in
   `frontend/src/app/components/shared/types.ts`.
-- Calls to the Express backend belong in `frontend/src/app/lib/mikeApi.ts` so
+- Calls to the Express backend belong in `frontend/src/app/lib/zaneApi.ts` so
   authentication, API error parsing, and request behavior stay consistent.
 - Reusable client behavior belongs in `frontend/src/app/hooks/` or
   `frontend/src/app/lib/`, with a colocated `*.test.ts` or `*.test.tsx` file.

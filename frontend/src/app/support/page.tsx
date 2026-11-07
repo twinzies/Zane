@@ -44,7 +44,7 @@ export default function SupportPage() {
         {
             value: "question",
             label: "Question",
-            description: "Ask a question about using Mike",
+            description: "Ask a question about using Zane",
         },
         {
             value: "other",
@@ -116,7 +116,7 @@ export default function SupportPage() {
                 {/* Fixed Header Section */}
                 <div className="flex-shrink-0 pt-6 md:pt-10 pb-0">
                     <div className="mb-5">
-                        <h1 className="text-4xl font-medium font-eb-garamond text-gray-900 mb-3">
+                        <h1 className="text-4xl font-medium font-serif text-gray-900 mb-3">
                             Support
                         </h1>
                     </div>
@@ -175,7 +175,7 @@ export default function SupportPage() {
                                         onChange={(e) =>
                                             setLink(e.target.value)
                                         }
-                                        placeholder="https://mikeoss.com/..."
+                                        placeholder="https://zaneoss.com/..."
                                         className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                                     />
                                     <p className="text-xs text-gray-500 mt-1">

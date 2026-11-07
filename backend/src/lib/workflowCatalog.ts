@@ -120,7 +120,7 @@ export async function findCatalogWorkflow(
   const workflowKey = catalogKeyFromWorkflowId(workflowId);
   if (!workflowKey) return null;
   const { data, error } = await db
-    .from("mike_workflows")
+    .from("zane_workflows")
     .select("*")
     .eq("workflow_key", workflowKey)
     .order("active", { ascending: false })
@@ -138,7 +138,7 @@ export async function listActiveCatalogWorkflows(
     distribution?: "default" | "addon" | null;
   } = {},
 ): Promise<WorkflowCatalogRow[]> {
-  let query = db.from("mike_workflows").select("*").eq("active", true);
+  let query = db.from("zane_workflows").select("*").eq("active", true);
   if (filters.type) query = query.eq("type", filters.type);
   if (filters.distribution) {
     query = query.eq("distribution", filters.distribution);

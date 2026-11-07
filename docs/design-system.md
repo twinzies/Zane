@@ -1,6 +1,6 @@
 # Design system
 
-Mike uses Tailwind v4 with shadcn-derived `new-york` primitives for selected
+zane uses Tailwind v4 with shadcn-derived `new-york` primitives for selected
 controls, alongside its own liquid-glass component system. Lucide supplies the
 icon set. This page documents what already exists so contributors can reuse it
 instead of re-deriving it. It is a description of the current system, not a
@@ -29,7 +29,7 @@ also register it for Tailwind class scanning in
 The convention for a cross-target primitive is a `XxxUI.tsx` in `src/shared/ui/`
 plus a thin re-export in `components/ui/` so web callers use one import path —
 see `GlassCardUI`/`glass-card.tsx`, `PillButtonUI`/`pill-button.tsx`, and
-`GlassIconButtonUI`/`glass-icon-button.tsx`. `MikeIconUI` similarly owns the
+`GlassIconButtonUI`/`glass-icon-button.tsx`. `zaneIconUI` similarly owns the
 single icon implementation used by thin web and Word add-in re-exports.
 
 ## Color tokens
@@ -37,7 +37,7 @@ single icon implementation used by thin web and Word add-in re-exports.
 Two families coexist. Prefer a token over a raw Tailwind palette class whenever
 one exists; prefer either over a hex literal.
 
-### App surfaces (Mike's own)
+### App surfaces (zane's own)
 
 These back the "liquid glass" chrome and are the ones most feature code needs.
 
@@ -81,7 +81,7 @@ the meaning ("this is the destructive action") rather than a specific color.
 
 ### Blue is overridden
 
-`@theme inline` redefines part of Tailwind's blue scale to Mike's azure:
+`@theme inline` redefines part of Tailwind's blue scale to zane's azure:
 
 ```css
 --color-blue:     rgb(0, 136, 255);
@@ -92,7 +92,7 @@ the meaning ("this is the destructive action") rather than a specific color.
 --color-blue-700: rgb(0, 120, 230);
 ```
 
-`bg-blue-600` is therefore Mike azure, not Tailwind blue. `blue-300`, `-400`,
+`bg-blue-600` is therefore zane azure, not Tailwind blue. `blue-300`, `-400`,
 `-500`, `-800` and `-900` are *not* overridden, so the scale is discontinuous —
 stay on the overridden steps for brand blue.
 
@@ -105,7 +105,7 @@ liquid-glass material tokens all have `.dark` values. The user preference adds
 without component-level `dark:` shadow recipes. The preference lives in
 Settings > Appearance.
 
-`MikeIcon` is the exception: the mark is inline SVG, so no class-based
+`zaneIcon` is the exception: the mark is inline SVG, so no class-based
 remapping reaches its gradient stops. It subscribes to the document theme class
 itself and swaps its dark-glass blades for the white ones. Anything else drawing
 brand-colored SVG should follow the same pattern rather than hard-coding a

@@ -13,7 +13,13 @@ import {
     useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { Loader2, AlertCircle, ChevronDown, ChevronRight } from "lucide-react";
+import {
+    Loader2,
+    AlertCircle,
+    ChevronDown,
+    ChevronRight,
+    LibraryBig,
+} from "lucide-react";
 import {
     deleteDocument,
     getDocumentUrl,
@@ -25,7 +31,7 @@ import {
     deleteDocumentVersion,
     renameDocumentVersion,
     type DocumentVersion,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import type {
     Document,
     Folder as ProjectFolder,
@@ -80,7 +86,6 @@ import {
 } from "@/app/components/projects/ProjectPageParts";
 import { DocumentSidePanel } from "@/app/components/shared/DocumentSidePanel";
 import { TableLoadMoreRow } from "@/app/components/shared/TableLoadMoreRow";
-import { LibrarySkeuoIcon } from "@/app/components/shared/AppSidebarSkeuoIcons";
 import { EmptyState } from "@/app/components/ui/empty-state";
 import { PillButton } from "@/app/components/ui/pill-button";
 import {
@@ -1166,7 +1171,7 @@ export function DocTable({
             (type) =>
                 type === SINGLE_DOCUMENT_DRAG_TYPE ||
                 type === MULTI_DOCUMENT_DRAG_TYPE ||
-                type === "application/mike-folder",
+                type === "application/zane-folder",
         );
     }
 
@@ -1533,7 +1538,7 @@ export function DocTable({
     async function handleDropOnFolder(targetFolderId: string | null, dt: DataTransfer) {
         if (!hasMovePayload(dt)) return;
         const docIds = readDocumentDragPayload(dt);
-        const subFolderId = dt.getData("application/mike-folder");
+        const subFolderId = dt.getData("application/zane-folder");
         if (docIds.length > 0) {
             const movingIds = docIds.filter((id) => {
                 const doc = documents.find((candidate) => candidate.id === id);
@@ -2267,7 +2272,7 @@ export function DocTable({
                                         e.preventDefault();
                                         return;
                                     }
-                                    e.dataTransfer.setData("application/mike-folder", folder.id);
+                                    e.dataTransfer.setData("application/zane-folder", folder.id);
                                     e.dataTransfer.effectAllowed = "move";
                                     e.stopPropagation();
                                 }}
@@ -3099,7 +3104,7 @@ export function DocTable({
                                     >
                                         <TableEmptyState>
                                             <EmptyState
-                                                icon={<LibrarySkeuoIcon />}
+                                                icon={<LibraryBig className="text-gray-400" />}
                                                 title={emptyStateTitle}
                                                 description="Upload documents or drop files and folders here"
                                                 action={

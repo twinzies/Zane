@@ -5,11 +5,11 @@ import { syncWorkflowCatalog } from "../lib/workflowCatalogSync";
 async function main() {
   const result = await syncWorkflowCatalog(createServerSupabase());
   console.log(
-    `Synced ${result.workflows} Mike workflows and ${result.references} reference files from ${result.sourceCommit}`,
+    `Synced ${result.workflows} zane workflows and ${result.references} reference files from ${result.sourceCommit}`,
   );
 }
 
 void main().catch((error) => {
-  console.error("Mike workflow sync failed", error);
+  console.error("zane workflow sync failed", error);
   process.exit(1);
 });

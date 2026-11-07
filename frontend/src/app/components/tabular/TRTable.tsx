@@ -6,7 +6,7 @@ import {
     useRef,
     useState,
 } from "react";
-import { Loader2, Plus, Upload } from "lucide-react";
+import { Loader2, Plus, Upload, Table2 } from "lucide-react";
 import type {
     ColumnConfig,
     Document,
@@ -23,7 +23,6 @@ import {
 } from "../shared/TablePrimitive";
 import { EmptyState } from "@/app/components/ui/empty-state";
 import { PillButton } from "@/app/components/ui/pill-button";
-import { TabularReviewSkeuoIcon } from "@/app/components/shared/AppSidebarSkeuoIcons";
 import { TRFirstColumnCell } from "./TRFirstColumnCell";
 import {
     LIQUID_GLASS_SELECTED_CLASS,
@@ -259,7 +258,7 @@ export const TRTable = forwardRef<TRTableHandle, Props>(function TRTable(
                     )}
                     <EmptyState
                         className="mx-auto w-full max-w-xs flex-1 justify-center"
-                        icon={<TabularReviewSkeuoIcon />}
+                        icon={<Table2 className="text-gray-400" />}
                         title="Tabular Review"
                         description="Add columns and documents to get started."
                         action={

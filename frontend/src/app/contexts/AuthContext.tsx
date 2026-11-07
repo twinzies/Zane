@@ -34,8 +34,8 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-const AUTH_SYNC_CHANNEL = "mike-auth-state";
-const AUTH_SYNC_STORAGE_KEY = "mike-auth-state-change";
+const AUTH_SYNC_CHANNEL = "zane-auth-state";
+const AUTH_SYNC_STORAGE_KEY = "zane-auth-state-change";
 const SESSION_ERROR_MESSAGE =
     "We could not check your session. Please try again.";
 const EXPIRED_SESSION_MESSAGE = "Your session expired. Please log in again.";

@@ -1,5 +1,5 @@
 /**
- * Mike API client — all browser requests use the same-origin `/api` gateway.
+ * zane API client — all browser requests use the same-origin `/api` gateway.
  * Authentication is carried only by the backend-managed HttpOnly cookie.
  */
 
@@ -56,7 +56,7 @@ const devLog = (...args: Parameters<typeof console.log>) => {
     if (isDev) console.log(...args);
 };
 
-export class MikeApiError extends Error {
+export class ZaneApiError extends Error {
     status: number;
     code: string | null;
     requestId: string | null;
@@ -68,7 +68,7 @@ export class MikeApiError extends Error {
         requestId?: string | null;
     }) {
         super(args.message);
-        this.name = "MikeApiError";
+        this.name = "ZaneApiError";
         this.status = args.status;
         this.code = args.code ?? null;
         this.requestId = args.requestId ?? null;
@@ -81,7 +81,7 @@ export const MALFORMED_ERROR_RESPONSE_MESSAGE =
 
 export function isMfaRequiredError(error: unknown) {
     return (
-        error instanceof MikeApiError &&
+        error instanceof ZaneApiError &&
         error.status === 403 &&
         error.code === "mfa_verification_required"
     );
@@ -147,13 +147,13 @@ async function toApiError(response: Response, path: string) {
             typeof parsed.request_id === "string"
                 ? parsed.request_id
                 : response.headers.get("x-request-id");
-        devLog("[mike-api] non-ok response", {
+        devLog("[zane-api] non-ok response", {
             path,
             status: response.status,
             code: parsed.code,
             requestId,
         });
-        return new MikeApiError({
+        return new ZaneApiError({
             status: response.status,
             code: typeof parsed.code === "string" ? parsed.code : null,
             requestId,
@@ -165,12 +165,12 @@ async function toApiError(response: Response, path: string) {
                       : `API error: ${response.status}`,
         });
     } catch {
-        devLog("[mike-api] non-ok non-json response", {
+        devLog("[zane-api] non-ok non-json response", {
             path,
             status: response.status,
             requestId: response.headers.get("x-request-id"),
         });
-        return new MikeApiError({
+        return new ZaneApiError({
             status: response.status,
             requestId: response.headers.get("x-request-id"),
             message:
@@ -568,6 +568,7 @@ export type ApiKeyProvider =
     | "claude"
     | "gemini"
     | "openai"
+    | "moonshot"
     | "openrouter"
     | "vercel"
     | "opencode-go"
@@ -1674,6 +1675,22 @@ export async function updateTabularReview(
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+    });
+}
+
+/**
+ * Removes rows by id, including the tombstones left behind by deleted
+ * documents. Row-scoped so that removing one document leaves every other row's
+ * generated cells untouched.
+ */
+export async function deleteTabularReviewRows(
+    reviewId: string,
+    rowIds: string[],
+): Promise<void> {
+    await apiRequest(`/tabular-review/${reviewId}/rows`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ row_ids: rowIds }),
     });
 }
 

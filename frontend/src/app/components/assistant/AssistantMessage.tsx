@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, RotateCw } from "lucide-react";
 import type {
     AssistantEvent,
     Citation,
@@ -36,8 +36,12 @@ interface Props {
     events?: AssistantEvent[];
     isStreaming?: boolean;
     isError?: boolean;
-    /** Human-readable error text rendered alongside the red Mike icon. */
+    /** Human-readable error text rendered alongside the red zane icon. */
     errorMessage?: string;
+    /** Resend the user message this failed turn was answering. */
+    onRetry?: () => void;
+    /** Suppress retry while another response is already streaming. */
+    retryDisabled?: boolean;
     citations?: Citation[];
     citationStatus?: "started" | "partial" | "final";
     activeCitation?: Citation | null;
@@ -109,6 +113,8 @@ export function AssistantMessage({
     isStreaming = false,
     isError = false,
     errorMessage,
+    onRetry,
+    retryDisabled = false,
     citations = [],
     citationStatus,
     activeCitation,
@@ -1111,8 +1117,19 @@ export function AssistantMessage({
                     />
                 )}
 
-                {/* Copy button */}
+                {/* Copy + retry */}
                 <div className="flex items-center gap-2 py-2 font-sans justify-start">
+                    {!isStreaming && hasError && onRetry && (
+                        <button
+                            type="button"
+                            onClick={onRetry}
+                            disabled={retryDisabled}
+                            className="flex items-center gap-1.5 rounded-full border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <RotateCw aria-hidden="true" className="h-3 w-3" />
+                            Retry
+                        </button>
+                    )}
                     {!isStreaming && (
                         <button
                             type="button"

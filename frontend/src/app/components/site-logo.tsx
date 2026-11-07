@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MikeIcon } from "@/app/components/chat/mike-icon";
+import { ZaneIcon } from "@/app/components/chat/zane-icon";
 
 interface SiteLogoProps {
     size?: "sm" | "md" | "lg" | "xl";
@@ -7,6 +7,8 @@ interface SiteLogoProps {
     iconClassName?: string;
     animate?: boolean;
     asLink?: boolean;
+    href?: string;
+    as?: "h1" | "div";
 }
 
 export function SiteLogo({
@@ -15,16 +17,19 @@ export function SiteLogo({
     iconClassName = "",
     animate = false,
     asLink = false,
+    href,
+    as: Wrapper = "h1",
 }: SiteLogoProps) {
     const landingHref =
         process.env.NODE_ENV === "production"
-            ? "https://mikeoss.com"
+            ? "https://zaneoss.com"
             : "http://localhost:3000";
+    const linkHref = href ?? (asLink ? landingHref : undefined);
     const sizeClasses = {
-        sm: "text-xl",
-        md: "text-2xl",
-        lg: "text-4xl",
-        xl: "text-6xl",
+        sm: "text-2xl",
+        md: "text-3xl",
+        lg: "text-5xl",
+        xl: "text-7xl",
     };
 
     const iconSizes = {
@@ -35,24 +40,24 @@ export function SiteLogo({
     };
 
     const logo = (
-        <h1
-            className={`flex items-center gap-1.5 ${sizeClasses[size]} font-light font-serif ${
+        <Wrapper
+            className={`flex items-center gap-2.5 ${sizeClasses[size]} ${
                 animate ? "sidebar-fade-in" : ""
             } ${className}`}
         >
             <span
                 className={`inline-flex shrink-0 items-center leading-none ${iconClassName}`}
             >
-                <MikeIcon size={iconSizes[size]} />
+                <ZaneIcon size={iconSizes[size]} />
             </span>
-            <span>Mike</span>
-        </h1>
+            <span className="font-script font-bold">zane</span>
+        </Wrapper>
     );
 
-    if (asLink) {
+    if (linkHref) {
         return (
             <Link
-                href={landingHref}
+                href={linkHref}
                 className="cursor-pointer hover:opacity-80 transition-opacity"
             >
                 {logo}

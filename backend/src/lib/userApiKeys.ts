@@ -7,6 +7,7 @@ export type ApiKeyProvider =
     | "claude"
     | "gemini"
     | "openai"
+    | "moonshot"
     | "openrouter"
     | "vercel"
     | "opencode-go"
@@ -27,6 +28,7 @@ const PROVIDERS: ApiKeyProvider[] = [
     "claude",
     "gemini",
     "openai",
+    "moonshot",
     "openrouter",
     "vercel",
     "opencode-go",
@@ -45,6 +47,8 @@ function envApiKey(provider: ApiKeyProvider): string | null {
             return process.env.GEMINI_API_KEY?.trim() || null;
         case "openai":
             return process.env.OPENAI_API_KEY?.trim() || null;
+        case "moonshot":
+            return process.env.MOONSHOT_API_KEY?.trim() || null;
         case "openrouter":
             return process.env.OPENROUTER_API_KEY?.trim() || null;
         case "vercel":
@@ -71,6 +75,17 @@ function encryptionKey(): Buffer {
     if (!secret) {
         throw new Error("USER_API_KEYS_ENCRYPTION_SECRET is not configured");
     }
+    return crypto.scryptSync(secret, "zane-user-api-keys-v1", 32);
+}
+
+// Rows written before the Mike -> Zane rebrand were encrypted with the old
+// scrypt salt. Decryption falls back to this key and the row is re-encrypted
+// with the current salt on first successful read.
+function legacyEncryptionKey(): Buffer {
+    const secret = process.env.USER_API_KEYS_ENCRYPTION_SECRET;
+    if (!secret) {
+        throw new Error("USER_API_KEYS_ENCRYPTION_SECRET is not configured");
+    }
     return crypto.scryptSync(secret, "mike-user-api-keys-v1", 32);
 }
 
@@ -88,19 +103,28 @@ function encrypt(value: string): Omit<EncryptedKeyRow, "provider"> {
     };
 }
 
-function decrypt(row: EncryptedKeyRow): string | null {
+function decryptWithKey(row: EncryptedKeyRow, key: Buffer): string {
+    const decipher = crypto.createDecipheriv(
+        "aes-256-gcm",
+        key,
+        Buffer.from(row.iv, "base64"),
+    );
+    decipher.setAuthTag(Buffer.from(row.auth_tag, "base64"));
+    const decrypted = Buffer.concat([
+        decipher.update(Buffer.from(row.encrypted_key, "base64")),
+        decipher.final(),
+    ]);
+    return decrypted.toString("utf8");
+}
+
+function decrypt(row: EncryptedKeyRow): { value: string; legacy: boolean } | null {
     try {
-        const decipher = crypto.createDecipheriv(
-            "aes-256-gcm",
-            encryptionKey(),
-            Buffer.from(row.iv, "base64"),
-        );
-        decipher.setAuthTag(Buffer.from(row.auth_tag, "base64"));
-        const decrypted = Buffer.concat([
-            decipher.update(Buffer.from(row.encrypted_key, "base64")),
-            decipher.final(),
-        ]);
-        return decrypted.toString("utf8");
+        return { value: decryptWithKey(row, encryptionKey()), legacy: false };
+    } catch {
+        // Fall through to the pre-rebrand key.
+    }
+    try {
+        return { value: decryptWithKey(row, legacyEncryptionKey()), legacy: true };
     } catch (err) {
         console.error("[user-api-keys] failed to decrypt stored key", {
             provider: row.provider,
@@ -126,6 +150,7 @@ export async function getUserApiKeyStatus(
         claude: false,
         gemini: false,
         openai: false,
+        moonshot: false,
         openrouter: false,
         vercel: false,
         "opencode-go": false,
@@ -134,6 +159,7 @@ export async function getUserApiKeyStatus(
             claude: null,
             gemini: null,
             openai: null,
+            moonshot: null,
             openrouter: null,
             vercel: null,
             "opencode-go": null,
@@ -173,6 +199,7 @@ export async function getUserApiKeys(
         claude: envApiKey("claude"),
         gemini: envApiKey("gemini"),
         openai: envApiKey("openai"),
+        moonshot: envApiKey("moonshot"),
         openrouter: envApiKey("openrouter"),
         vercel: envApiKey("vercel"),
         "opencode-go": envApiKey("opencode-go"),
@@ -188,8 +215,26 @@ export async function getUserApiKeys(
     for (const row of (data ?? []) as EncryptedKeyRow[]) {
         const provider = normalizeApiKeyProvider(row.provider);
         if (!provider) continue;
-        const userKey = decrypt(row)?.trim() || null;
-        if (userKey) apiKeys[provider] = userKey;
+        const decrypted = decrypt(row);
+        const userKey = decrypted?.value.trim() || null;
+        if (!userKey) continue;
+        apiKeys[provider] = userKey;
+        if (decrypted?.legacy) {
+            const { error: upgradeError } = await db
+                .from("user_api_keys")
+                .update({
+                    ...encrypt(userKey),
+                    updated_at: new Date().toISOString(),
+                })
+                .eq("user_id", userId)
+                .eq("provider", provider);
+            if (upgradeError) {
+                console.error(
+                    "[user-api-keys] failed to re-encrypt legacy key",
+                    { provider, error: upgradeError.message },
+                );
+            }
+        }
     }
 
     return apiKeys;

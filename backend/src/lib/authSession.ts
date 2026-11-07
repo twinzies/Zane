@@ -9,7 +9,7 @@ import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { requestOriginIsWordAddin } from "./origins";
 import { supabaseSessionConfiguration } from "./runtimeConfig";
 
-const AUTH_COOKIE_BASE_NAME = "mike-session";
+const AUTH_COOKIE_BASE_NAME = "zane-session";
 
 function authConfiguration() {
   const { url, key } = supabaseSessionConfiguration();

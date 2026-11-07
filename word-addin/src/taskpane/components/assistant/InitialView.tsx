@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import quickActionsIcon from "@icons/features/quick-actions.svg";
-import { getUserProfile } from "../../api/mikeApi";
-import { MikeIcon } from "../../../shared/chat/mike-icon";
+import { Zap } from "lucide-react";
+import { getUserProfile } from "../../api/zaneApi";
+import { ZaneIcon } from "../../../shared/chat/zane-icon";
 import type { QuickAction } from "../../types";
 import { useQuickActions } from "../../lib/quickActionStore";
 import { quickActionDisplayName } from "../../lib/quickActions";
@@ -56,7 +56,7 @@ export function InitialView({
         {name && (
           <>
             <div
-              data-testid="initial-mike-icon"
+              data-testid="initial-zane-icon"
               className="absolute h-[26px] w-[26px]"
               style={{
                 left: "50%",
@@ -68,7 +68,7 @@ export function InitialView({
                   "transform 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
               }}
             >
-              <MikeIcon size={ICON_SIZE} />
+              <ZaneIcon size={ICON_SIZE} />
             </div>
             <h1
               ref={textRef}
@@ -91,13 +91,7 @@ export function InitialView({
       </div>
       <div className="flex h-5 items-center justify-center">
         <span className="flex items-center gap-1.5 text-xs font-medium text-gray-800">
-          <img
-            src={quickActionsIcon}
-            alt=""
-            aria-hidden="true"
-            draggable={false}
-            className="h-3.5 w-3.5 shrink-0 object-contain"
-          />
+          <Zap aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
           Quick actions
         </span>
       </div>

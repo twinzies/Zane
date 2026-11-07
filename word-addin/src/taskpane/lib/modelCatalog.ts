@@ -1,4 +1,4 @@
-// Imported from the base client (not the ../api/mikeApi barrel) so this
+// Imported from the base client (not the ../api/zaneApi barrel) so this
 // module's compile graph stays free of Office globals: the drift-guard test in
 // frontend/src/wordAddin imports this file across packages.
 import type { ApiKeyStatus } from "../api/client";
@@ -37,6 +37,9 @@ export const STATIC_MODELS: readonly ModelOption[] = [
   { id: "gpt-5.6-luna", label: "GPT-5.6 Luna", group: "OpenAI" },
   { id: "gpt-5.5", label: "GPT-5.5", group: "OpenAI" },
   { id: "gpt-5.4", label: "GPT-5.4", group: "OpenAI" },
+  // Direct Moonshot API. Kept in sync with the web app's MODELS.
+  { id: "kimi-k3", label: "Kimi K3", group: "Moonshot AI" },
+  { id: "kimi-k2.6", label: "Kimi K2.6", group: "Moonshot AI" },
 ];
 
 for (const model of STATIC_MODELS) model.source = "Direct";
@@ -203,6 +206,7 @@ export function isModelAvailable(
   if (!model || model.group === "Local") return false;
   if (model.group === "Anthropic") return !!status.claude;
   if (model.group === "Google") return !!status.gemini;
+  if (model.group === "Moonshot AI") return !!status.moonshot;
   return !!status.openai;
 }
 
@@ -217,6 +221,7 @@ export function missingModelProvider(modelId: string): string {
   if (modelId.startsWith("opencode-go/") || group === "OpenCode Go") {
     return "OpenCode Go";
   }
+  if (group === "Moonshot AI") return "Moonshot";
   return group === "Anthropic"
     ? "Anthropic"
     : group === "Google"

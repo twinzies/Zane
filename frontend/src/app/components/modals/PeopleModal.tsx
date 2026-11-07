@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { User, Loader2 } from "lucide-react";
-import type { ProjectPeople } from "@/app/lib/mikeApi";
+import type { ProjectPeople } from "@/app/lib/zaneApi";
 import { AddUserInput } from "../shared/AddUserInput";
 import { Modal } from "./Modal";
 import {
@@ -51,7 +51,7 @@ type RosterRow = {
 };
 
 /**
- * Roster of every Mike member with access to the project, with controls to
+ * Roster of every zane member with access to the project, with controls to
  * add/remove members. Mirrors AddDocumentsModal's frame.
  */
 export function PeopleModal({

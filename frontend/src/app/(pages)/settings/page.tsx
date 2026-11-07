@@ -15,7 +15,7 @@ import {
     needsMfaVerification,
 } from "@/app/components/popups/MfaVerificationPopup";
 import { WarningPopup } from "@/app/components/popups/WarningPopup";
-import { deleteAccount, isMfaRequiredError } from "@/app/lib/mikeApi";
+import { deleteAccount, isMfaRequiredError } from "@/app/lib/zaneApi";
 import { SettingsSection } from "./SettingsSection";
 
 const isDev = process.env.NODE_ENV !== "production";

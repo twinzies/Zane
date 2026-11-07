@@ -1,11 +1,11 @@
-import { MikeApiError } from "./mikeApi";
+import { ZaneApiError } from "./zaneApi";
 
 export function userFacingApiError(
     error: unknown,
     fallback: string,
 ): string {
     if (
-        error instanceof MikeApiError &&
+        error instanceof ZaneApiError &&
         error.status >= 400 &&
         error.status < 500 &&
         error.message

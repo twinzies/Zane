@@ -243,7 +243,7 @@ describe("workflows.routes", () => {
     // ── GET /workflows/system ──────────────────────────────────────────────
     describe("GET /workflows/system", () => {
         it("returns catalog workflows in the legacy system response shape", async () => {
-            supabaseState.tables.mike_workflows = {
+            supabaseState.tables.zane_workflows = {
                 data: [
                     {
                         id: "catalog-1",

@@ -8,7 +8,7 @@ const CHAT_ID = "chat-persistent-edit";
 const ASSISTANT_MESSAGE_ID = "assistant-persistent-edit";
 const STABLE_EDIT_ID = `${ASSISTANT_MESSAGE_ID}:edit-0`;
 const PERSISTED_EDIT_ID = "33333333-3333-4333-8333-333333333333";
-const ANCHOR_SETTINGS_KEY = "mike.wordEditAnchors.v1";
+const ANCHOR_SETTINGS_KEY = "zane.wordEditAnchors.v1";
 const ORIGINAL = "The Suplier shall deliver the goods.";
 const REPLACEMENT = "The Supplier shall deliver the goods.";
 const REDLINE = wordEdits(
@@ -115,7 +115,7 @@ test("rehydrates View from a hidden Word bookmark after the task pane reloads", 
   const bookmark = await applyPersistedEdit(addin, page);
 
   const beforeReload = await addin.wordDocument();
-  expect(bookmark.name).toMatch(/^_MikeEdit_[A-Za-z0-9_]+$/);
+  expect(bookmark.name).toMatch(/^_ZaneEdit_[A-Za-z0-9_]+$/);
   expect(bookmark.name.length).toBeLessThanOrEqual(40);
   expect(bookmark.original).toBe(ORIGINAL);
   expect(bookmark.text).toBe(REPLACEMENT);
@@ -294,14 +294,14 @@ test("keeps review controls when the bookmark holds an unrelated sibling revisio
 
   await reloadAndOpenPersistedChat(addin, page);
 
-  // Word ranges report sibling revisions from the same passage; Mike's own
+  // Word ranges report sibling revisions from the same passage; zane's own
   // Added/Deleted pair is still unambiguous, so the card stays actionable.
   const view = page.getByRole("button", { name: "View", exact: true });
   await expect(view).toBeVisible();
   const accept = page.getByRole("button", { name: "Accept", exact: true });
   await expect(accept).toBeVisible();
 
-  // Accepting resolves exactly Mike's pair — never the injected revision.
+  // Accepting resolves exactly zane's pair — never the injected revision.
   await accept.click();
   await expect(page.getByText("Accepted.", { exact: true })).toBeVisible();
   const calls = await addin.wordCalls();
@@ -319,7 +319,7 @@ test("stays View-only when the bookmark's revisions no longer identify the edit"
   await mockPersistedChat(addin);
   const bookmark = await applyPersistedEdit(addin, page);
 
-  // A second identical Added revision makes Mike's insertion ambiguous, so
+  // A second identical Added revision makes zane's insertion ambiguous, so
   // no revision may be resolved on the user's behalf.
   expect(
     await addin.injectRevisionIntoBookmark(bookmark.name, "Added", REPLACEMENT),

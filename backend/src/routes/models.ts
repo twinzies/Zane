@@ -57,7 +57,7 @@ modelsRouter.get("/ollama", requireAuth, async (_req, res) => {
 });
 
 // OpenRouter's authenticated catalog, limited to text models that support
-// tool calling because Mike supplies tools on interactive chat requests.
+// tool calling because zane supplies tools on interactive chat requests.
 modelsRouter.get("/openrouter", requireAuth, async (_req, res) => {
     const userId = res.locals.userId as string;
     try {
@@ -127,7 +127,7 @@ modelsRouter.get("/openrouter", requireAuth, async (_req, res) => {
 });
 
 // Vercel AI Gateway's public catalog, limited to text models that support tool
-// calling because Mike supplies tools on interactive chat requests. A key must
+// calling because zane supplies tools on interactive chat requests. A key must
 // still be configured before the catalog is exposed in the user's settings.
 modelsRouter.get("/vercel", requireAuth, async (_req, res) => {
     const userId = res.locals.userId as string;
@@ -227,7 +227,7 @@ modelsRouter.get("/vercel", requireAuth, async (_req, res) => {
 // OpenCode Go's catalog spans Chat Completions, Anthropic Messages, and
 // Responses models, but unlike OpenRouter and Vercel it publishes no protocol
 // metadata to filter on. Fail closed against the compatibility lists in
-// lib/llm/models instead of offering Responses models Mike cannot yet use.
+// lib/llm/models instead of offering Responses models zane cannot yet use.
 modelsRouter.get("/opencode-go", requireAuth, async (_req, res) => {
     const userId = res.locals.userId as string;
     try {

@@ -45,7 +45,7 @@ vi.mock("@/app/contexts/UserProfileContext", () => ({
     }),
 }));
 
-vi.mock("@/app/lib/mikeApi", () => ({
+vi.mock("@/app/lib/zaneApi", () => ({
     deleteAccount: vi.fn(),
     isMfaRequiredError: vi.fn(() => false),
 }));

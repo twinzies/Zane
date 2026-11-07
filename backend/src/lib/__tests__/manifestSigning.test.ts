@@ -27,7 +27,7 @@ const BODY = {
  * under test, so these tests pin the wire format rather than agreeing with the
  * implementation. A recipient checking a manifest does exactly this.
  */
-function payloadFor(digestHex: string, context = "mike-project-manifest-v1") {
+function payloadFor(digestHex: string, context = "zane-project-manifest-v1") {
     return Buffer.concat([
         Buffer.from(`${context}\0`, "utf8"),
         Buffer.from(digestHex, "hex"),
@@ -149,7 +149,7 @@ describe("sealManifest", () => {
         const publicKey = publicKeyOf(sealed.signature!.public_key);
 
         for (const payload of [
-            payloadFor(sealed.digest.value, "mike-project-manifest-v2"),
+            payloadFor(sealed.digest.value, "zane-project-manifest-v2"),
             payloadFor(sealed.digest.value, ""),
             Buffer.from(sealed.digest.value, "hex"), // bare digest, no context
         ]) {

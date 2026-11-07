@@ -1,7 +1,7 @@
 "use client";
 
 import type { Dispatch, SetStateAction } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Table2 } from "lucide-react";
 import {
     RowActionMenuItems,
     RowActions,
@@ -26,7 +26,6 @@ import {
 } from "@/app/components/shared/TablePrimitive";
 import { EmptyState } from "@/app/components/ui/empty-state";
 import { PillButton } from "@/app/components/ui/pill-button";
-import { TabularReviewSkeuoIcon } from "@/app/components/shared/AppSidebarSkeuoIcons";
 import type { Document, TabularReview } from "@/app/components/shared/types";
 import { formatDate } from "./ProjectPageParts";
 import type {
@@ -249,7 +248,7 @@ export function ProjectReviewsTable({
                         </p>
                     ) : (
                         <EmptyState
-                            icon={<TabularReviewSkeuoIcon />}
+                            icon={<Table2 className="text-gray-400" />}
                             title="Tabular Reviews"
                             description="Extract data from project documents into tables using AI."
                             action={

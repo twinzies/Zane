@@ -7,7 +7,7 @@
  * redline block index. The bookmark itself lives in Word; this setting tells a
  * reloaded task pane which bookmark belongs to which historical edit card.
  */
-const WORD_EDIT_ANCHORS_SETTING = "mike.wordEditAnchors.v1";
+const WORD_EDIT_ANCHORS_SETTING = "zane.wordEditAnchors.v1";
 
 interface WordEditAnchor {
   bookmarkName: string;
@@ -83,7 +83,7 @@ function stableDigest(value: string): string {
  * Leading `_` makes this an invisible bookmark in Word's normal bookmark UI.
  */
 export function bookmarkNameForEdit(stableEditId: string): string {
-  return `_MikeEdit_${stableDigest(stableEditId)}`;
+  return `_ZaneEdit_${stableDigest(stableEditId)}`;
 }
 
 /**

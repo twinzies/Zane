@@ -1,5 +1,5 @@
 /*
- * Shared design tokens for the Mike design system.
+ * Shared design tokens for the zane design system.
  *
  * A local subset of the web app's tokens (frontend/src/app/globals.css),
  * adapted for the Word add-in's independently bundled task pane. Keep values
@@ -18,6 +18,7 @@
     --color-foreground: var(--foreground);
     --font-sans: var(--font-inter);
     --font-serif: var(--font-eb-garamond);
+    --font-script: var(--font-italiana);
     --color-blue: rgb(0, 136, 255);
     --color-blue-50: rgba(0, 136, 255, 0.05);
     --color-blue-100: rgba(0, 136, 255, 0.1);

@@ -20,5 +20,5 @@ try {
 }
 
 app.listen(PORT, () => {
-  console.log(`Mike backend running on port ${PORT}`);
+  console.log(`zane backend running on port ${PORT}`);
 });

@@ -34,7 +34,7 @@ workflowAddonsRouter.get(
     const db = createServerSupabase();
     const type = typeof req.query.type === "string" ? req.query.type : null;
     let query = db
-      .from("mike_workflows")
+      .from("zane_workflows")
       .select(
         "id, workflow_key, pack_key, pack_title, pack_description, pack_version, version, title, description, type, contributors, language, practice, jurisdictions, active, updated_at",
       )
@@ -59,7 +59,7 @@ workflowAddonsRouter.get(
   asyncRoute(async (req, res) => {
     const db = createServerSupabase();
     const { data, error } = await db
-      .from("mike_workflows")
+      .from("zane_workflows")
       .select("*")
       .eq("id", req.params.addonId)
       .eq("distribution", "addon")
@@ -71,9 +71,9 @@ workflowAddonsRouter.get(
     let references = null;
     if (data.type === "assistant") {
       const { data: assistantReferences, error: referencesError } = await db
-        .from("mike_workflow_reference_files")
+        .from("zane_workflow_reference_files")
         .select("id, filename, file_type, size_bytes, created_at")
-        .eq("mike_workflow_id", data.id)
+        .eq("zane_workflow_id", data.id)
         .order("created_at", { ascending: true });
       if (referencesError) {
         return void sendInternalError(res, referencesError);
@@ -96,7 +96,7 @@ workflowAddonsRouter.post(
     const userId = res.locals.userId as string;
     const db = createServerSupabase();
     const { data: addon } = await db
-      .from("mike_workflows")
+      .from("zane_workflows")
       .select("*")
       .eq("id", req.params.addonId)
       .eq("distribution", "addon")
@@ -133,9 +133,9 @@ workflowAddonsRouter.post(
       const { data: references, error: referencesError } =
         addon.type === "assistant"
           ? await db
-              .from("mike_workflow_reference_files")
+              .from("zane_workflow_reference_files")
               .select("filename, file_type, storage_path, size_bytes")
-              .eq("mike_workflow_id", addon.id)
+              .eq("zane_workflow_id", addon.id)
               .order("created_at", { ascending: true })
           : { data: [], error: null };
       if (referencesError) throw referencesError;

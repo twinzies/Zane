@@ -9,7 +9,7 @@ import {
     type ReasoningLevel,
 } from "../components/assistant/ModelToggle";
 import { isModelAvailable } from "../lib/modelAvailability";
-import type { ApiKeyState } from "../lib/mikeApi";
+import type { ApiKeyState } from "../lib/zaneApi";
 
 /**
  * The composer's accepted-id surface. Exported so the Word add-in drift guard

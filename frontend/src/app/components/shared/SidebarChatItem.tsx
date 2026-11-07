@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MoreHorizontal, Pencil, Trash2, Check, X } from "lucide-react";
+import {
+    MoreHorizontal,
+    Pencil,
+    Trash2,
+    Check,
+    X,
+    MessageSquare,
+} from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -14,7 +21,6 @@ import { useChatHistoryContext } from "@/app/contexts/ChatHistoryContext";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { OwnerOnlyPopup } from "@/app/components/popups/OwnerOnlyPopup";
 import type { Chat } from "@/app/components/shared/types";
-import { ChatSkeuoIcon } from "@/app/components/shared/AppSidebarSkeuoIcons";
 import { cn } from "@/app/lib/utils";
 import {
     LIQUID_GLASS_SELECTED_CLASS,
@@ -58,7 +64,7 @@ export function SidebarChatItem({ chat, isActive, onSelect, projectName }: Props
     return (
         <div
             className={cn(
-                "group relative flex h-8 w-full items-center rounded-md transition-colors",
+                "group relative flex h-9 w-full items-center rounded-md transition-colors",
                 isActive
                     ? `${LIQUID_GLASS_SELECTED_CLASS} pr-1`
                     : `pr-3 ${LIQUID_GLASS_HOVER_CLASS} hover:pr-1`,
@@ -92,7 +98,10 @@ export function SidebarChatItem({ chat, isActive, onSelect, projectName }: Props
                 </div>
             ) : (
                 <>
-                    <ChatSkeuoIcon className="ml-2.5 h-3.5 w-3.5 shrink-0" />
+                    <MessageSquare
+                        aria-hidden="true"
+                        className="ml-3 h-4 w-4 shrink-0 text-gray-500"
+                    />
                     <button
                         onClick={onSelect}
                         onMouseEnter={(e) => {
@@ -104,7 +113,7 @@ export function SidebarChatItem({ chat, isActive, onSelect, projectName }: Props
                             e.currentTarget.scrollTo({ left: 0, behavior: "smooth" });
                         }}
                         className={cn(
-                            "min-w-0 flex-1 overflow-x-hidden whitespace-nowrap scrollbar-none py-1 pl-2 text-left text-xs",
+                            "min-w-0 flex-1 overflow-x-hidden whitespace-nowrap scrollbar-none py-1 pl-2.5 text-left text-sm",
                             isActive
                                 ? "pr-3 text-gray-900"
                                 : "pr-0 text-gray-700 group-hover:pr-3",

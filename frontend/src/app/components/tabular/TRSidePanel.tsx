@@ -473,11 +473,11 @@ export function TRSidePanel({
 
                 {/* Analysis panel */}
                 <div className="flex-1 overflow-y-auto">
-                    <div className="pb-2 px-5">
+                    <div className="px-4 pb-5 pt-4">
                         {documentOnly ? (
                             <>
                                 <div className="mb-4">
-                                    <div className="mb-3 text-xs font-medium text-gray-900">
+                                    <div className="mb-1.5 text-xs font-semibold text-gray-500">
                                         Document
                                     </div>
                                     <div className="flex min-h-6 items-center gap-1.5">
@@ -485,10 +485,10 @@ export function TRSidePanel({
                                             fileType={
                                                 doc?.file_type ?? doc?.filename
                                             }
-                                            className="h-3 w-3 shrink-0"
+                                            className="h-4 w-4 shrink-0"
                                         />
                                         <div
-                                            className="min-w-0 flex-1 truncate text-xs leading-6 text-gray-800"
+                                            className="min-w-0 flex-1 truncate text-[15px] font-medium leading-6 text-gray-800"
                                             title={doc?.filename}
                                         >
                                             {doc?.filename ?? row.label}
@@ -496,10 +496,10 @@ export function TRSidePanel({
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="mb-3 text-xs font-medium text-gray-900">
+                                    <div className="mb-1.5 text-xs font-semibold text-gray-500">
                                         Version
                                     </div>
-                                    <div className="min-h-6 text-xs leading-6 text-gray-800">
+                                    <div className="min-h-6 text-[15px] font-medium leading-6 text-gray-800">
                                         V{activeVersionNumber}
                                     </div>
                                 </div>
@@ -508,7 +508,7 @@ export function TRSidePanel({
                             <>
                                 {/* Document field */}
                                 <div className="mb-4">
-                                    <div className="mb-3 text-xs font-medium text-gray-900">
+                                    <div className="mb-1.5 text-xs font-semibold text-gray-500">
                                         {row.row_type === "folder"
                                             ? "Folder"
                                             : "Document"}
@@ -531,10 +531,10 @@ export function TRSidePanel({
                                             >
                                                 <SubfolderSvgIcon
                                                     open={folderExpanded}
-                                                    className="h-3 w-3 shrink-0"
+                                                    className="h-4 w-4 shrink-0"
                                                 />
                                                 <span
-                                                    className="min-w-0 flex-1 truncate text-xs leading-6"
+                                                    className="min-w-0 flex-1 truncate text-[15px] font-medium leading-6"
                                                     title={row.label}
                                                 >
                                                     {row.label}
@@ -575,7 +575,7 @@ export function TRSidePanel({
                                                                         sourceDocument.file_type ??
                                                                         sourceDocument.filename
                                                                     }
-                                                                    className="h-3 w-3 shrink-0"
+                                                                    className="h-4 w-4 shrink-0"
                                                                 />
                                                                 <span className="min-w-0 flex-1 truncate">
                                                                     {
@@ -598,7 +598,7 @@ export function TRSidePanel({
                                                 className="h-3 w-3"
                                             />
                                             <div
-                                                className="min-w-0 flex-1 truncate text-xs leading-6 text-gray-800"
+                                                className="min-w-0 flex-1 truncate text-[15px] font-medium leading-6 text-gray-800"
                                                 title={row.label}
                                             >
                                                 {row.label}
@@ -609,18 +609,18 @@ export function TRSidePanel({
 
                                 {/* Column field */}
                                 <div className="mb-4">
-                                    <div className="mb-3 text-xs font-medium text-gray-900">
+                                    <div className="mb-1.5 text-xs font-semibold text-gray-500">
                                         Column
                                     </div>
-                                    <div className="min-h-6 truncate text-xs leading-6 text-gray-800">
+                                    <div className="min-h-6 truncate text-[15px] font-medium leading-6 text-gray-800">
                                         {column.name}
                                     </div>
                                 </div>
 
                                 {/* Flag section */}
                                 {cell.content?.flag && (
-                                    <div className="mb-5">
-                                        <h4 className="mb-2 text-xs font-medium text-gray-900">
+                                    <div className="mb-4">
+                                        <h4 className="mb-1.5 text-xs font-semibold text-gray-500">
                                             Flag
                                         </h4>
                                         <span
@@ -635,11 +635,11 @@ export function TRSidePanel({
                                 )}
 
                                 {/* Results */}
-                                <div className="mb-6">
-                                    <h4 className="mb-2 text-xs font-medium text-gray-900">
+                                <div className="mb-4">
+                                    <h4 className="mb-1.5 text-xs font-semibold text-gray-500">
                                         Results
                                     </h4>
-                                    <div className="text-xs leading-relaxed text-gray-700">
+                                    <div className="text-[15px] leading-6 text-gray-700">
                                         <MarkdownContent
                                             citations={summaryCitations}
                                             onCitationClick={handleCitationOpen}
@@ -653,10 +653,10 @@ export function TRSidePanel({
                                 {/* Reasoning */}
                                 {cell.content?.reasoning && (
                                     <div>
-                                        <h4 className="mb-2 text-xs font-medium text-gray-900">
+                                        <h4 className="mb-1.5 text-xs font-semibold text-gray-500">
                                             Reasoning
                                         </h4>
-                                        <div className="text-xs leading-relaxed text-gray-700">
+                                        <div className="text-[15px] leading-6 text-gray-700">
                                             <MarkdownContent
                                                 citations={reasoningCitations}
                                                 onCitationClick={

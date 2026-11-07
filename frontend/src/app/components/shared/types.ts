@@ -1,18 +1,4 @@
-// Shared TypeScript types for Mike AI legal assistant
-
-import type {
-    SourceDocument,
-    SourceDocumentAction,
-    SourceDocumentMetadata,
-    SourceDocumentQuote,
-    SourceDocumentType,
-    SourceSubdocument,
-} from "../../../../../backend/src/lib/sourceDocuments";
-import type {
-    AskInputItem as SharedAskInputItem,
-    AskInputResponseItem as SharedAskInputResponseItem,
-    AskInputsEvent as SharedAskInputsEvent,
-} from "../../../../../backend/src/lib/chat/types";
+// Shared TypeScript types for zane AI legal assistant
 
 export interface Folder {
     id: string;
@@ -80,12 +66,61 @@ export interface Document {
     latest_version_number?: number | null;
 }
 
-export type PanelDocumentType = SourceDocumentType;
-export type PanelDocumentMetadata = SourceDocumentMetadata;
-export type PanelDocumentAction = SourceDocumentAction;
-export type PanelDocumentQuote = SourceDocumentQuote;
-export type PanelSubdocument = SourceSubdocument;
-export type PanelDocument = SourceDocument;
+export type PanelDocumentType =
+    | "docx"
+    | "pdf"
+    | "spreadsheet"
+    | "case"
+    | "legislation";
+
+export type PanelDocumentMetadata = {
+    label: string;
+    value: string;
+    format?: "date";
+};
+
+export type PanelDocumentAction = {
+    type: "download" | "link";
+    url: string;
+    label: string;
+    title?: string;
+};
+
+export type PanelDocumentQuote = {
+    quote: string;
+    verification?: {
+        verified: boolean;
+        source_excerpt?: string;
+        start_char?: number;
+        end_char?: number;
+    };
+    target: {
+        page?: number | string;
+        sheet?: string;
+        cell?: string;
+        subdocument_id?: string;
+    };
+};
+
+export type PanelSubdocument = {
+    document_id: string;
+    title: string;
+    type: "html";
+    html?: string | null;
+    text?: string | null;
+};
+
+export type PanelDocument = {
+    document_id: string;
+    title: string;
+    type: PanelDocumentType;
+    metadata: PanelDocumentMetadata[];
+    actions?: PanelDocumentAction[];
+    quotes: PanelDocumentQuote[];
+    subdocuments?: PanelSubdocument[];
+    version_id?: string | null;
+    version_number?: number | null;
+};
 
 export function isPanelDocument(value: unknown): value is PanelDocument {
     if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -145,9 +180,48 @@ export interface EditAnnotation {
     status: "pending" | "accepted" | "rejected";
 }
 
-export type AskInputItem = SharedAskInputItem;
-export type AskInputResponseItem = SharedAskInputResponseItem;
-export type AskInputsEvent = SharedAskInputsEvent;
+export type AskInputItem =
+    | {
+          id: string;
+          kind: "choice";
+          question: string;
+          options: { value: string }[];
+          allow_other: boolean;
+          other_label: string;
+          response_prefix?: string;
+      }
+    | {
+          id: string;
+          kind: "text";
+          question: string;
+          response_prefix?: string;
+      }
+    | {
+          id: string;
+          kind: "documents";
+          document_types: string[];
+          response_prefix?: string;
+      };
+
+export type AskInputResponseItem =
+    | {
+          id: string;
+          kind: "choice" | "text";
+          question: string;
+          answer?: string;
+          skipped?: boolean;
+      }
+    | {
+          id: string;
+          kind: "documents";
+          filenames: string[];
+          skipped?: boolean;
+      };
+
+export type AskInputsEvent = {
+    type: "ask_inputs";
+    items: AskInputItem[];
+};
 
 export type AskInputsResponseEvent = {
     type: "ask_inputs_response";
@@ -746,6 +820,14 @@ export interface TabularCell {
     created_at: string;
 }
 
+export interface TabularReviewRowSource {
+    /** Null once the underlying document has been deleted. */
+    document_id: string | null;
+    /** Snapshot taken when the row was built; survives the document. */
+    filename: string;
+    deleted: boolean;
+}
+
 export interface TabularReviewRow {
     id: string;
     review_id: string;
@@ -755,7 +837,12 @@ export interface TabularReviewRow {
     library_folder_id: string | null;
     document_id: string | null;
     sort_index: number;
+    /** Surviving source document ids only. Deleted sources are omitted. */
     source_document_ids: string[];
+    /** Every source the row was built from, including deleted ones. */
+    source_documents?: TabularReviewRowSource[];
+    /** True once no source document survives — the row is a tombstone. */
+    is_deleted?: boolean;
 }
 
 // Workflows

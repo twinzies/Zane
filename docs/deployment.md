@@ -1,6 +1,6 @@
 # Manual and production deployment
 
-Use this path when connecting Mike to managed Supabase and S3-compatible
+Use this path when connecting zane to managed Supabase and S3-compatible
 storage instead of the infrastructure bundled with Docker Compose.
 
 ## Prerequisites
@@ -39,10 +39,10 @@ cd backend
 npm run sync:workflows
 ```
 
-The job resolves `MIKE_WORKFLOWS_REF`, downloads and validates the raw
+The job resolves `ZANE_WORKFLOWS_REF`, downloads and validates the raw
 `Open-Legal-Products/mike-workflows` archive, uploads reference assets to the
 configured S3-compatible storage, and transactionally replaces the active
-`mike_workflows` catalog. Temporary archive and JSON files are deleted when the
+`zane_workflows` catalog. Temporary archive and JSON files are deleted when the
 job exits. Run this as a release job before directing traffic to the new
 backend; backend startup itself only reads the database. Docker Compose runs
 this sequence automatically for local/self-hosted deployments.
@@ -67,7 +67,7 @@ Use:
 - the Supabase project URL for backend `SUPABASE_URL`;
 - the anon/publishable key for backend `SUPABASE_PUBLISHABLE_KEY`;
 - the service-role key for backend `SUPABASE_SECRET_KEY`; and
-- the internal Mike backend origin for frontend `API_BASE_URL`.
+- the internal zane backend origin for frontend `API_BASE_URL`.
 
 Set backend `API_PUBLIC_URL` to the browser-reachable frontend gateway, including
 its `/api` prefix (for example, `https://app.example.com/api`). OAuth providers,
@@ -103,7 +103,7 @@ configured globally, its matching field is read-only.
 ## Authentication email
 
 Supabase Auth sends signup, email-change, and password-recovery messages.
-Configure production SMTP in the Supabase dashboard; Mike does not require a
+Configure production SMTP in the Supabase dashboard; zane does not require a
 Resend API key for these messages.
 
 In **Authentication > URL Configuration**, set the Site URL to the deployed
@@ -111,7 +111,7 @@ frontend origin and add that origin's `/auth/callback` URL to the redirect
 allow list. For example:
 
 ```text
-https://your-mike.example/auth/callback
+https://your-zane.example/auth/callback
 ```
 
 Enable email confirmation for production signups. Keep secure email change
@@ -120,7 +120,7 @@ addresses. Set the minimum password length to 10; this applies when passwords
 are created or changed and does not invalidate existing shorter passwords. The
 same callback handles signup confirmation, confirmed email
 changes, and password-recovery links before sending the user to the appropriate
-Mike page.
+zane page.
 
 Review the Supabase email templates after changing the public Site URL, and
 test every link against the deployed frontend before inviting users. Existing
@@ -131,7 +131,7 @@ mirrored into `user_profiles`.
 
 Create a **Web application** OAuth client in Google Auth Platform. Its
 authorized redirect URI is the Supabase Auth callback shown on the Google
-provider page, not Mike's frontend callback. For hosted Supabase it normally
+provider page, not zane's frontend callback. For hosted Supabase it normally
 has this form:
 
 ```text
@@ -140,10 +140,10 @@ https://<project-ref>.supabase.co/auth/v1/callback
 
 Enable Google under **Supabase > Authentication > Providers**, then enter the
 Google client ID and secret. In **Authentication > URL Configuration**, allow
-both deployed Mike clients:
+both deployed zane clients:
 
 ```text
-https://your-mike.example/auth/callback
+https://your-zane.example/auth/callback
 https://your-word-addin.example/oauth-dialog.html
 ```
 
@@ -187,13 +187,13 @@ Build and run the production add-in host with its public URLs baked into the
 static bundle and its private backend origin supplied only at runtime:
 
 ```bash
-docker build -t mike-word-addin \
+docker build -t zane-word-addin \
   --build-arg REACT_APP_WEB_APP_URL=https://app.example.com \
   --build-arg WORD_ADDIN_PUBLIC_URL=https://word.example.com \
   word-addin
 docker run --rm -p 3200:3200 \
   -e WORD_ADDIN_BACKEND_ORIGIN=http://backend:3001 \
-  mike-word-addin
+  zane-word-addin
 ```
 
 Put an HTTPS ingress or reverse proxy in front of port 3200. The included host

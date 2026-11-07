@@ -11,6 +11,7 @@ const NO_KEYS: ApiKeyStatus = {
     claude: false,
     gemini: false,
     openai: false,
+    moonshot: false,
     openrouter: false,
     vercel: false,
     "opencode-go": false,

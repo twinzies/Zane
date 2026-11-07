@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AssistantEvent, Chat } from "@/app/components/shared/types";
 
 import {
-    MikeApiError,
+    ZaneApiError,
     addDocumentToProject,
     clearTabularCells,
     completeUserOnboarding,
@@ -145,7 +145,7 @@ import {
     uploadProjectDocument,
     uploadReviewDocument,
     uploadStandaloneDocument,
-} from "./mikeApi";
+} from "./zaneApi";
 
 const fetchMock = vi.fn();
 
@@ -200,25 +200,25 @@ afterEach(() => {
     vi.clearAllMocks();
 });
 
-describe("MikeApiError / isMfaRequiredError", () => {
+describe("ZaneApiError / isMfaRequiredError", () => {
     it("carries status and code, defaulting code to null", () => {
-        const withCode = new MikeApiError({
+        const withCode = new ZaneApiError({
             message: "nope",
             status: 403,
             code: "mfa_verification_required",
         });
-        expect(withCode.name).toBe("MikeApiError");
+        expect(withCode.name).toBe("ZaneApiError");
         expect(withCode.status).toBe(403);
         expect(withCode.code).toBe("mfa_verification_required");
 
-        const withoutCode = new MikeApiError({ message: "nope", status: 500 });
+        const withoutCode = new ZaneApiError({ message: "nope", status: 500 });
         expect(withoutCode.code).toBeNull();
     });
 
     it("recognizes exactly the 403 + mfa_verification_required combination", () => {
         expect(
             isMfaRequiredError(
-                new MikeApiError({
+                new ZaneApiError({
                     message: "x",
                     status: 403,
                     code: "mfa_verification_required",
@@ -227,12 +227,12 @@ describe("MikeApiError / isMfaRequiredError", () => {
         ).toBe(true);
         expect(
             isMfaRequiredError(
-                new MikeApiError({ message: "x", status: 403, code: "other" }),
+                new ZaneApiError({ message: "x", status: 403, code: "other" }),
             ),
         ).toBe(false);
         expect(
             isMfaRequiredError(
-                new MikeApiError({
+                new ZaneApiError({
                     message: "x",
                     status: 401,
                     code: "mfa_verification_required",
@@ -312,7 +312,7 @@ describe("apiRequest plumbing (via thin wrappers)", () => {
         await expect(deleteAllChats()).resolves.toBeUndefined();
     });
 
-    it("maps a JSON error body to a MikeApiError with code and detail", async () => {
+    it("maps a JSON error body to a ZaneApiError with code and detail", async () => {
         fetchMock.mockResolvedValue(
             jsonResponse(
                 { detail: "MFA required", code: "mfa_verification_required" },
@@ -322,8 +322,8 @@ describe("apiRequest plumbing (via thin wrappers)", () => {
 
         const error = await getUserProfile().catch((e: unknown) => e);
 
-        expect(error).toBeInstanceOf(MikeApiError);
-        const apiError = error as MikeApiError;
+        expect(error).toBeInstanceOf(ZaneApiError);
+        const apiError = error as ZaneApiError;
         expect(apiError.status).toBe(403);
         expect(apiError.code).toBe("mfa_verification_required");
         expect(apiError.message).toBe("MFA required");
@@ -427,7 +427,7 @@ describe("blob requests (exportAccountData)", () => {
         expect((await exportAccountData()).filename).toBeNull();
     });
 
-    it("throws a MikeApiError on failure", async () => {
+    it("throws a ZaneApiError on failure", async () => {
         fetchMock.mockResolvedValue(
             jsonResponse({ detail: "not allowed" }, { status: 403 }),
         );
@@ -1591,7 +1591,7 @@ describe("tabular cell operations", () => {
 // ---------------------------------------------------------------------------
 // Multipart uploads. These bypass apiRequest (FormData must not get a JSON
 // content type) and therefore have their own, weaker error contract: a plain
-// Error carrying the raw response text instead of MikeApiError.
+// Error carrying the raw response text instead of ZaneApiError.
 // ---------------------------------------------------------------------------
 
 describe("multipart upload endpoints", () => {
@@ -1636,7 +1636,7 @@ describe("multipart upload endpoints", () => {
             (e: unknown) => e,
         );
 
-        expect(error).toBeInstanceOf(MikeApiError);
+        expect(error).toBeInstanceOf(ZaneApiError);
         expect(error).toMatchObject({
             status: 413,
             message: "The request could not be completed. Please try again.",
@@ -1714,7 +1714,7 @@ describe("multipart upload endpoints", () => {
         );
         await expect(
             uploadWorkflowReferenceFile("w1", file),
-        ).rejects.toBeInstanceOf(MikeApiError);
+        ).rejects.toBeInstanceOf(ZaneApiError);
     });
 
     it("replaces workflow reference files as authenticated multipart data", async () => {
@@ -1737,7 +1737,7 @@ describe("multipart upload endpoints", () => {
         );
         await expect(
             replaceWorkflowReferenceFile("w1", "missing", file),
-        ).rejects.toBeInstanceOf(MikeApiError);
+        ).rejects.toBeInstanceOf(ZaneApiError);
     });
 });
 

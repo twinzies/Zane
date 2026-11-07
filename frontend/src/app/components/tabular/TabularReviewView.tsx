@@ -22,6 +22,7 @@ import {
 import {
     clearTabularCells,
     deleteTabularReview,
+    deleteTabularReviewRows,
     getTabularReview,
     getProject,
     getTabularReviewPeople,
@@ -30,8 +31,8 @@ import {
     streamTabularGeneration,
     updateTabularReview,
     uploadReviewDocument,
-    MikeApiError,
-} from "@/app/lib/mikeApi";
+    ZaneApiError,
+} from "@/app/lib/zaneApi";
 import type {
     ColumnConfig,
     Document,
@@ -337,7 +338,7 @@ export function TRView({ reviewId, projectId }: Props) {
             );
         } catch (err) {
             if (
-                err instanceof MikeApiError &&
+                err instanceof ZaneApiError &&
                 (err.code === "review_running" || err.code === "review_stale")
             ) {
                 await loadLatestReview();
@@ -710,10 +711,10 @@ export function TRView({ reviewId, projectId }: Props) {
         setSelectedRowIds([]);
         setActionsOpen(false);
         try {
-            await updateTabularReview(reviewId, {
-                document_ids: remaining.map((d) => d.id),
-                columns_config: columns,
-            });
+            // Row-scoped: rebuilding the review from a document list would
+            // discard every other row's generated cells, and would take the
+            // tombstones for deleted documents with it.
+            await deleteTabularReviewRows(reviewId, rowIdsToDelete);
             const detail = await getTabularReview(reviewId);
             setReview(detail.review);
             setDocuments(detail.documents);
@@ -749,7 +750,7 @@ export function TRView({ reviewId, projectId }: Props) {
             await clearTabularCells(reviewId, rowIds);
         } catch (err) {
             if (
-                err instanceof MikeApiError &&
+                err instanceof ZaneApiError &&
                 (err.code === "review_running" || err.code === "review_stale")
             ) {
                 await loadLatestReview();
@@ -1349,7 +1350,7 @@ export function TRView({ reviewId, projectId }: Props) {
                                 }
                             }}
                             onRegenerate={
-                                cellMutationsBlocked
+                                cellMutationsBlocked || expandedRow.is_deleted
                                     ? undefined
                                     : () =>
                                           handleRegenerateCell(

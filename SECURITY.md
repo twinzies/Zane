@@ -28,16 +28,16 @@ This project has a solo maintainer. You can expect an acknowledgment within
 
 - Reports about the code, default configuration, and deployment guidance in
   this repo are all in scope.
-- The **hosted service at `app.mikeoss.com`** (the cloud version offered from
-  the official Mike website) is in scope — report issues affecting it through
+- The **hosted service at `app.zaneoss.com`** (the cloud version offered from
+  the official zane website) is in scope — report issues affecting it through
   the same private channel above, and please keep testing non-destructive:
   only accounts and data you own, no denial of service, no access to other
   users' data beyond the minimum proof needed.
 - **Independent self-hosted installations** run by third parties are the one
   exclusion: findings that only apply to how a specific outside operator has
-  deployed Mike (their infrastructure, their configuration) should go to
+  deployed zane (their infrastructure, their configuration) should go to
   whoever operates that deployment.
-- Mike is an **LLM legal product**, so LLM-specific reports are explicitly
+- zane is an **LLM legal product**, so LLM-specific reports are explicitly
   welcome: prompt injection (including via uploaded documents), getting the
   model to ignore its guardrails, leaking another user's data or system
   prompts through model output, and similar.

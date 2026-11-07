@@ -57,7 +57,7 @@ export async function syncWorkflowCatalog(
       for (const reference of workflow.reference_files) {
         if (storageEnabled) {
           const storagePath =
-            `mike-workflows/${workflow.workflow_key}/` +
+            `zane-workflows/${workflow.workflow_key}/` +
             `${reference.content_hash}/${reference.filename}`;
           const bytes = await readFile(reference.temporary_path);
           await uploadFile(
@@ -83,7 +83,7 @@ export async function syncWorkflowCatalog(
       );
     }
 
-    const { error } = await db.rpc("replace_mike_workflows", {
+    const { error } = await db.rpc("replace_zane_workflows", {
       p_source_commit: document.source_commit,
       p_workflows: databaseWorkflows,
     });

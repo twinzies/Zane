@@ -26,7 +26,7 @@ import {
 } from "@/app/components/popups/MfaVerificationPopup";
 import {
     type McpConnectorSummary,
-    MikeApiError,
+    ZaneApiError,
     createMcpConnector,
     deleteMcpConnector,
     getMcpConnector,
@@ -36,7 +36,7 @@ import {
     setMcpToolEnabled,
     startMcpConnectorOAuth,
     updateMcpConnector,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import { userFacingApiError } from "@/app/lib/userFacingError";
 import { settingsGlassIconButtonClassName } from "../settingsStyles";
 import { SettingsSection } from "../SettingsSection";
@@ -277,7 +277,7 @@ export default function ConnectorsPage() {
     ): Promise<McpConnectorSummary | null> => {
         const popup = window.open(
             "about:blank",
-            "mike_mcp_oauth",
+            "zane_mcp_oauth",
             "popup,width=560,height=720,menubar=no,toolbar=no,location=no,status=no",
         );
         const { authorizationUrl, alreadyAuthorized, callbackOrigin } =
@@ -367,7 +367,7 @@ export default function ConnectorsPage() {
                     refreshed = await refreshMcpConnectorTools(connector.id);
                 } catch (err) {
                     if (
-                        err instanceof MikeApiError &&
+                        err instanceof ZaneApiError &&
                         err.code === "oauth_required"
                     ) {
                         replaceConnector(connector);
@@ -491,7 +491,7 @@ export default function ConnectorsPage() {
                     replaceConnector(await refreshMcpConnectorTools(connectorId));
                 } catch (err) {
                     if (
-                        err instanceof MikeApiError &&
+                        err instanceof ZaneApiError &&
                             err.code === "oauth_required"
                     ) {
                         await connectConnectorOAuth(connectorId);

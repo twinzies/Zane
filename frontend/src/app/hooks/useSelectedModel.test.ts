@@ -2,12 +2,13 @@ import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { useSelectedModel, useSelectedReasoning } from "./useSelectedModel";
 import { canonicalModelId } from "../components/assistant/ModelToggle";
-import type { ApiKeyState } from "../lib/mikeApi";
+import type { ApiKeyState } from "../lib/zaneApi";
 
 const keys: ApiKeyState = {
     claude: { configured: true, source: "user" },
     gemini: { configured: false, source: null },
     openai: { configured: true, source: "user" },
+    moonshot: { configured: false, source: null },
     openrouter: { configured: true, source: "user" },
     vercel: { configured: false, source: null },
     "opencode-go": { configured: false, source: null },

@@ -19,7 +19,7 @@ import {
     getProjectPeople,
     listProjectChats,
     updateProject,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import type {
     Chat,
     ColumnConfig,

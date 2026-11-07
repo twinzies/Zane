@@ -29,7 +29,7 @@ import {
     updateTabularChatReasoningLevel,
     updateLastSelectedChatSettings,
     parseTabularChatSelectionKey,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import type { Message } from "@/app/components/shared/types";
 import { applyDarkMode } from "@/app/lib/theme";
 import { publishTabularChatSettingsUpdate } from "@/app/lib/tabularChatSettingsEvents";
@@ -117,6 +117,7 @@ const API_KEY_PROVIDERS: ApiKeyProvider[] = [
     "claude",
     "gemini",
     "openai",
+    "moonshot",
     "openrouter",
     "vercel",
     "opencode-go",
@@ -128,6 +129,7 @@ function emptyApiKeys(): ApiKeyState {
         claude: { configured: false, source: null },
         gemini: { configured: false, source: null },
         openai: { configured: false, source: null },
+        moonshot: { configured: false, source: null },
         openrouter: { configured: false, source: null },
         vercel: { configured: false, source: null },
         "opencode-go": { configured: false, source: null },

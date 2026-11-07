@@ -83,6 +83,61 @@ describe("TRTable", () => {
         expect(onDocumentOpen).toHaveBeenCalledWith(row, documents[0]);
     });
 
+    it("marks a row whose document was deleted and keeps its cell content", () => {
+        const deletedRow = {
+            ...row,
+            id: "row-deleted",
+            label: "Gone.pdf",
+            row_type: "document",
+            document_id: null,
+            source_document_ids: [],
+            source_documents: [
+                { document_id: null, filename: "Gone.pdf", deleted: true },
+            ],
+            is_deleted: true,
+        } as TabularReviewRow;
+        const { onDocumentOpen } = renderTable("document", [deletedRow]);
+
+        // House convention for a deleted file: "[Deleted]" prefix, greyed name.
+        expect(screen.getByText("[Deleted]")).toBeInTheDocument();
+        expect(screen.getByTitle(/the source file has been deleted/)).toHaveTextContent(
+            "[Deleted] Gone.pdf",
+        );
+        // The row stays selectable so it can be removed.
+        expect(
+            screen.getByRole("checkbox", { name: "Select Gone.pdf" }),
+        ).toBeInTheDocument();
+
+        const nameButton = screen.getByRole("button", {
+            name: "Gone.pdf (deleted)",
+        });
+        expect(nameButton).toBeDisabled();
+        fireEvent.click(nameButton);
+        expect(onDocumentOpen).not.toHaveBeenCalled();
+    });
+
+    it("lists a deleted child inside a folder row from its snapshot name", () => {
+        const folderRow = {
+            ...row,
+            source_document_ids: ["doc-1"],
+            source_documents: [
+                { document_id: "doc-1", filename: "Agreement.pdf", deleted: false },
+                { document_id: null, filename: "Removed.pdf", deleted: true },
+            ],
+            is_deleted: false,
+        } as TabularReviewRow;
+        const { onDocumentOpen } = renderTable("folder", [folderRow]);
+
+        fireEvent.click(screen.getByText("Contracts"));
+        expect(screen.getByText("Agreement.pdf")).toBeInTheDocument();
+        const deletedChild = screen.getByRole("button", {
+            name: "Removed.pdf (deleted)",
+        });
+        expect(deletedChild).toBeDisabled();
+        fireEvent.click(deletedChild);
+        expect(onDocumentOpen).not.toHaveBeenCalled();
+    });
+
     it("opens a standalone document row from its document name", () => {
         const documentRow = {
             ...row,

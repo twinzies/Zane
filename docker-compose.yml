@@ -1,4 +1,4 @@
-# MikeOSS — full local stack, one `docker compose up`. No external accounts.
+# zaneOSS — full local stack, one `docker compose up`. No external accounts.
 # Supabase is embedded (db + auth + rest + gateway); storage is RustFS.
 # The only thing you must supply is one model API key in backend/.env.
 #
@@ -6,10 +6,14 @@
 # demo values — fine for localhost, NOT for anything exposed. The keys are JWTs
 # signed with the secret; don't change one without regenerating the others.
 
+name: zane
+
 services:
   # --- Supabase: Postgres (ships base roles, the `auth` schema, auth.uid, etc.)
   db:
     image: supabase/postgres:17.6.1.136
+    # This tag's arm64 variant has an empty entrypoint; use the intact amd64 image.
+    platform: linux/amd64
     ports:
       # ponytail: infra ports bind loopback only — reachable from the host for
       # debugging, never from the internet. Compose networking is unaffected, so
@@ -65,8 +69,8 @@ services:
       GOTRUE_SMTP_PORT: "1025"
       # No SMTP_USER/PASS: Mailpit needs no auth, and GoTrue refuses to send
       # credentials over a plaintext (non-TLS) connection ("unencrypted connection").
-      GOTRUE_SMTP_ADMIN_EMAIL: admin@mike.local
-      GOTRUE_SMTP_SENDER_NAME: Mike
+      GOTRUE_SMTP_ADMIN_EMAIL: admin@zane.local
+      GOTRUE_SMTP_SENDER_NAME: zane
       # Confirmation/recovery links resolve to the gateway, which strips /auth/v1.
       GOTRUE_MAILER_URLPATHS_CONFIRMATION: /auth/v1/verify
       GOTRUE_MAILER_URLPATHS_RECOVERY: /auth/v1/verify
@@ -117,6 +121,7 @@ services:
   # --- One-shot: load schema.sql once auth.users exists; grant service_role.
   db-init:
     image: supabase/postgres:17.6.1.136
+    platform: linux/amd64
     depends_on:
       db:
         condition: service_healthy
@@ -134,6 +139,8 @@ services:
       - ./backend/migrations/20260827_01_tabular_chat_model_reasoning.sql:/tabular-chat-settings-migration.sql:ro
       - ./backend/migrations/20260827_02_reasoning_max.sql:/reasoning-max-migration.sql:ro
       - ./backend/migrations/20260827_03_remove_minimal_reasoning.sql:/remove-minimal-reasoning-migration.sql:ro
+      - ./backend/migrations/20260829_01_moonshot_user_api_key_provider.sql:/moonshot-api-key-migration.sql:ro
+      - ./backend/migrations/20260831_01_tabular_review_deleted_documents.sql:/tabular-deleted-documents-migration.sql:ro
     entrypoint: ["bash", "-c"]
     command:
       - |
@@ -155,6 +162,8 @@ services:
         psql "$$DB" -v ON_ERROR_STOP=1 -f /tabular-chat-settings-migration.sql;
         psql "$$DB" -v ON_ERROR_STOP=1 -f /reasoning-max-migration.sql;
         psql "$$DB" -v ON_ERROR_STOP=1 -f /remove-minimal-reasoning-migration.sql;
+        psql "$$DB" -v ON_ERROR_STOP=1 -f /moonshot-api-key-migration.sql;
+        psql "$$DB" -v ON_ERROR_STOP=1 -f /tabular-deleted-documents-migration.sql;
         psql "$$DB" -c "grant usage on schema public to service_role;
           grant all privileges on all tables in schema public to service_role;
           grant all privileges on all sequences in schema public to service_role;
@@ -202,13 +211,13 @@ services:
     entrypoint: /bin/sh
     command: >
       -c "until aws --endpoint-url http://storage:9000 s3 ls; do echo 'waiting for storage'; sleep 2; done;
-          aws --endpoint-url http://storage:9000 s3 mb s3://mike || true"
+          aws --endpoint-url http://storage:9000 s3 mb s3://zane || true"
     restart: "no"
 
-  # --- One-shot: download, validate, and transactionally import mike-workflows.
+  # --- One-shot: download, validate, and transactionally import zane-workflows.
   workflow-sync:
     build: ./backend
-    image: mike-backend:local
+    image: zane-backend:local
     env_file:
       - path: ./backend/.env
         required: false
@@ -220,7 +229,7 @@ services:
       - R2_ENDPOINT_URL=http://storage:9000
       - R2_ACCESS_KEY_ID=rustfsadmin
       - R2_SECRET_ACCESS_KEY=rustfsadmin
-      - R2_BUCKET_NAME=mike
+      - R2_BUCKET_NAME=zane
     command: ["npm", "run", "sync:workflows"]
     depends_on:
       db-init:
@@ -233,7 +242,7 @@ services:
 
   backend:
     build: ./backend
-    image: mike-backend:local
+    image: zane-backend:local
     ports:
       - "${BACKEND_PORT:-3001}:3001"
     # ponytail: both optional — local dev keeps secrets in backend/.env, hosted
@@ -259,7 +268,7 @@ services:
       - R2_ENDPOINT_URL=http://storage:9000
       - R2_ACCESS_KEY_ID=rustfsadmin
       - R2_SECRET_ACCESS_KEY=rustfsadmin
-      - R2_BUCKET_NAME=mike
+      - R2_BUCKET_NAME=zane
       # Local Ollama running on the host. Override OLLAMA_MODEL to change the tag.
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434/v1}
     extra_hosts:

@@ -88,7 +88,7 @@ module.exports = async (_env, options) => {
     }
 
     // Word loads the task pane over HTTPS, and its WebView blocks "mixed content"
-    // (HTTP requests from an HTTPS page). Proxy the local Mike API through this
+    // (HTTP requests from an HTTPS page). Proxy the local zane API through this
     // HTTPS dev server so authentication and API calls stay same-origin and the
     // HttpOnly session cookie works consistently across Word hosts.
     const apiTarget = process.env.API_PROXY_TARGET || "http://localhost:3001";
@@ -134,30 +134,30 @@ module.exports = async (_env, options) => {
         // The frontend's public icon set is canonical. Webpack imports those
         // same SVGs and emits content-hashed copies for the add-in bundle.
         "@icons": path.resolve(__dirname, "..", "frontend", "public", "icons"),
-        "@mike/edit-card-ui": frontendSharedUi("EditCardUI.tsx"),
-        "@mike/edit-cards-section-ui": frontendSharedUi(
+        "@zane/edit-card-ui": frontendSharedUi("EditCardUI.tsx"),
+        "@zane/edit-cards-section-ui": frontendSharedUi(
           "EditCardsSectionUI.tsx",
         ),
-        "@mike/pre-response-wrapper-ui": frontendSharedUi(
+        "@zane/pre-response-wrapper-ui": frontendSharedUi(
           "PreResponseWrapperUI.tsx",
         ),
-        "@mike/document-event-blocks-ui": frontendSharedUi(
+        "@zane/document-event-blocks-ui": frontendSharedUi(
           "DocumentEventBlocksUI.tsx",
         ),
-        "@mike/glass-card-ui": frontendSharedUi("GlassCardUI.tsx"),
-        "@mike/modal-ui": frontendSharedUi("ModalUI.tsx"),
-        "@mike/header-buttons-ui": frontendSharedUi(
+        "@zane/glass-card-ui": frontendSharedUi("GlassCardUI.tsx"),
+        "@zane/modal-ui": frontendSharedUi("ModalUI.tsx"),
+        "@zane/header-buttons-ui": frontendSharedUi(
           "HeaderButtonsUI.tsx",
         ),
-        "@mike/pill-button-ui": frontendSharedUi("PillButtonUI.tsx"),
-        "@mike/dropdown-ui": frontendSharedUi("DropdownUI.tsx"),
-        "@mike/citation-pill-ui": frontendSharedUi("CitationPillUI.tsx"),
-        "@mike/model-toggle-ui": frontendSharedUi("ModelToggleUI.tsx"),
-        "@mike/mike-icon-ui": frontendSharedUi("MikeIconUI.tsx"),
-        "@mike/google-icon-ui": frontendSharedUi("GoogleIconUI.tsx"),
-        "@mike/auth-styles-ui": frontendSharedUi("AuthStylesUI.ts"),
-        "@mike/auth-divider-ui": frontendSharedUi("AuthDividerUI.tsx"),
-        "@mike/workflow-slash-command-ui": frontendSharedUi(
+        "@zane/pill-button-ui": frontendSharedUi("PillButtonUI.tsx"),
+        "@zane/dropdown-ui": frontendSharedUi("DropdownUI.tsx"),
+        "@zane/citation-pill-ui": frontendSharedUi("CitationPillUI.tsx"),
+        "@zane/model-toggle-ui": frontendSharedUi("ModelToggleUI.tsx"),
+        "@zane/zane-icon-ui": frontendSharedUi("zaneIconUI.tsx"),
+        "@zane/google-icon-ui": frontendSharedUi("GoogleIconUI.tsx"),
+        "@zane/auth-styles-ui": frontendSharedUi("AuthStylesUI.ts"),
+        "@zane/auth-divider-ui": frontendSharedUi("AuthDividerUI.tsx"),
+        "@zane/workflow-slash-command-ui": frontendSharedUi(
           "WorkflowSlashCommandUI.tsx",
         ),
       },
@@ -207,14 +207,14 @@ module.exports = async (_env, options) => {
         // Development defaults stay on the HTTPS dev-server origin, whose
         // proxies reach the HTTP backends without mixed-content failures.
         // Production hosting must reverse-proxy this same-origin path to the
-        // Mike backend so HttpOnly auth cookies are never third-party cookies.
+        // zane backend so HttpOnly auth cookies are never third-party cookies.
         REACT_APP_API_BASE_URL:
           process.env.REACT_APP_API_BASE_URL || "/api",
         REACT_APP_DEFAULT_MODEL: "gemini-3-flash-preview",
-        // The Mike web app origin — the task pane links here (e.g. the
+        // The zane web app origin — the task pane links here (e.g. the
         // account/api-keys page); it never fetches from it.
         REACT_APP_WEB_APP_URL: isDev
-          ? process.env.REACT_APP_WEB_APP_URL || "https://app.mikeoss.com"
+          ? process.env.REACT_APP_WEB_APP_URL || "https://app.zaneoss.com"
           : undefined,
       }),
     ],

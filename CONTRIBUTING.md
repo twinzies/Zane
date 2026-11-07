@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve Mike. Please keep contributions small, focused, and easy to review.
+Thanks for helping improve zane. Please keep contributions small, focused, and easy to review.
 
 ## Guidelines
 
@@ -39,7 +39,7 @@ tokens, the primitive inventory, and the full baseline.
     - why
     - testing
 
-## Mike Workflows
+## zane Workflows
 
 System workflows live in the sibling
 [`Open-Legal-Products/mike-workflows`](https://github.com/Open-Legal-Products/mike-workflows)
@@ -53,7 +53,7 @@ How workflows reach users:
 - **Defaults.** Five workflows are marked as defaults by the ingestion policy
   in `backend/src/lib/workflowCatalogSource.ts`. The workflow sync job stores
   that classification and the Quick Action settings in
-  `mike_workflows`; Postgres installs independent, editable copies for each
+  `zane_workflows`; Postgres installs independent, editable copies for each
   user on first use.
 - **Add-ons.** Every other workflow in the repository ships in the Add-ons
   catalog. Users import an add-on as an independent, editable copy of the
@@ -76,10 +76,10 @@ npm run build
 npm run sync:workflows
 ```
 
-The job resolves the configured `mike-workflows` ref to an immutable commit,
+The job resolves the configured `zane-workflows` ref to an immutable commit,
 downloads and validates its archive, writes a temporary local JSON document,
 uploads reference assets to object storage, and transactionally replaces the
-active rows in `mike_workflows`. Its temporary files are deleted before the job
+active rows in `zane_workflows`. Its temporary files are deleted before the job
 exits. The backend only reads the database and does not download or generate a
 catalog during startup. Docker Compose runs the job automatically; managed
 deployments should run `npm run sync:workflows` as a release step.
@@ -89,7 +89,7 @@ it does not produce backend runtime data.
 
 ## Security
 
-Do not open a public issue for security vulnerabilities. Use [GitHub's private vulnerability reporting](https://github.com/Open-Legal-Products/mike/security/advisories/new) instead.
+Do not open a public issue for security vulnerabilities. Use [GitHub's private vulnerability reporting](https://github.com/Open-Legal-Products/zane/security/advisories/new) instead.
 
 We will aim to respond promptly and coordinate a disclosure timeline with you.
 

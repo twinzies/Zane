@@ -7,7 +7,7 @@ import {
     uploadProjectDocument,
     addDocumentToProject,
     getProject,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import type { Document, Folder } from "../shared/types";
 import { FileDirectory } from "../shared/FileDirectory";
 import type { DirectoryTab } from "../shared/useDirectoryData";

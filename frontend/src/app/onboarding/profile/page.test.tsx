@@ -32,9 +32,9 @@ vi.mock("@/app/contexts/UserProfileContext", () => ({
     }),
 }));
 
-vi.mock("@/app/lib/mikeApi", () => ({ updateUserProfile }));
+vi.mock("@/app/lib/zaneApi", () => ({ updateUserProfile }));
 vi.mock("@/app/components/site-logo", () => ({
-    SiteLogo: () => <div>Mike</div>,
+    SiteLogo: () => <div>zane</div>,
 }));
 
 describe("OnboardingProfilePage", () => {

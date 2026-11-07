@@ -41,7 +41,7 @@ import {
   searchLibraryDocuments,
     uploadLibraryDocument,
     type LibraryKind,
-} from "@/app/lib/mikeApi";
+} from "@/app/lib/zaneApi";
 import type { Document } from "@/app/components/shared/types";
 import { useDebouncedValue } from "@/app/hooks/useDebouncedValue";
 
@@ -933,6 +933,15 @@ export function LibraryCollectionPage({
                                     Back
                                 </TabPillButton>
                             )}
+                            <TabPillButton
+                                onClick={addDocumentsAction ?? undefined}
+                                disabled={!addDocumentsAction || loading}
+                            >
+                                <Upload className="h-3.5 w-3.5" />
+                                <span className="hidden sm:inline">
+                                    Upload {addCollectionLabel.toLowerCase()}
+                                </span>
+                            </TabPillButton>
                             <TabPillButton
                                 onClick={uploadFolderAction ?? undefined}
                                 disabled={!uploadFolderAction || loading}
