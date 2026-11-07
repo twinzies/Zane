@@ -1,16 +1,33 @@
 # zane
 
-![zane](docs/assets/link-image.jpg)
-
-zane (zaneOSS) is an open-source legal AI platform for document review,
-drafting, and legal research.
+Zane (zaneOSS) is an open-source legal AI platform for document review,
+drafting, and legal research built on top of Mike OSS.
 
 It combines a Next.js frontend, an Express backend, Supabase Auth/Postgres,
 and Cloudflare R2-compatible object storage.
 
-Website: [zaneoss.com](https://zaneoss.com)
+## Screenshots
 
-![zane assistant home screen](docs/assets/zane-home.png)
+<p align="center">
+  <img src="docs/assets/zane-home.png" alt="zane assistant home screen" width="900">
+  <br>
+  <sub><b>Assistant.</b> Start a conversation, open a project, or move between
+  the library, tabular reviews, and workflows from one workspace.</sub>
+</p>
+
+<p align="center">
+  <img src="docs/assets/zane-research.png" alt="zane assistant answering a legal research question" width="900">
+  <br>
+  <sub><b>Legal research.</b> Ask a legal question and see the assistant's reasoning
+  as it works toward an answer.</sub>
+</p>
+
+<p align="center">
+  <img src="docs/assets/zane-tabular-review-models.png" alt="Choosing a model for a new tabular review in zane" width="900">
+  <br>
+  <sub><b>Tabular review.</b> Extract structured answers across many documents at
+  once, using the language model of your choice.</sub>
+</p>
 
 ## Features
 
@@ -84,11 +101,10 @@ authentication behavior, Ollama setup, and first-run guidance.
 
 ## System workflows
 
-zane's system assistant and tabular-review workflows are maintained in the
-[`Open-Legal-Products/mike-workflows`](https://github.com/Open-Legal-Products/mike-workflows)
+zane's system assistant and tabular-review workflows are maintained in the upstream project - Mike OSS - [`Open-Legal-Products/mike-workflows`](https://github.com/Open-Legal-Products/mike-workflows)
 repository. See [Contributing](CONTRIBUTING.md#system-workflows) for how they are
 packaged and synchronized with this application.
 
 ## License
 
-zane is available under the [GNU Affero General Public License v3.0](LICENSE).
+Zane is available under the [GNU Affero General Public License v3.0](LICENSE).
